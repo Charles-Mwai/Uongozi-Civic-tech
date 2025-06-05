@@ -6,6 +6,7 @@
     <title>Uongozi Civic Tech - Examination</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <header class="header">
@@ -51,7 +52,24 @@
                 <h3>Congratulations!</h3>
                 <p id="nameResult"></p>
                 <p id="scoreResult"></p>
-                <button id="restartButton">Take Exam Again</button>
+                
+                <div class="share-section">
+                    <p>Share your score:</p>
+                    <div class="share-buttons">
+                        <button id="shareTwitter" class="share-btn twitter">
+                            <i class="fab fa-twitter"></i> Twitter
+                        </button>
+                        <button id="shareWhatsApp" class="share-btn whatsapp">
+                            <i class="fab fa-whatsapp"></i> WhatsApp
+                        </button>
+                        <button id="copyLink" class="share-btn link">
+                            <i class="fas fa-link"></i> Copy Link
+                        </button>
+                    </div>
+                    <p id="shareMessage" class="share-message"></p>
+                </div>
+                
+                <button id="restartButton" class="restart-btn">Take Exam Again</button>
             </div>
         </div>
     </div>

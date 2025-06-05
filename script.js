@@ -227,9 +227,53 @@ document.addEventListener('DOMContentLoaded', () => {
         const nameResult = document.getElementById('nameResult');
         const scoreResult = document.getElementById('scoreResult');
         const restartButton = document.getElementById('restartButton');
+        const shareMessage = document.getElementById('shareMessage');
+        const shareTwitter = document.getElementById('shareTwitter');
+        const shareWhatsApp = document.getElementById('shareWhatsApp');
+        const copyLink = document.getElementById('copyLink');
 
-        nameResult.textContent = `Name: ${user.name}`;
-        scoreResult.textContent = `Your Civic Score: ${score}/${questions.length}`;
+        const userName = user.name;
+        const userScore = score;
+        const totalQuestions = questions.length;
+        const percentage = Math.round((userScore / totalQuestions) * 100);
+
+        nameResult.textContent = `Name: ${userName}`;
+        scoreResult.textContent = `Your Civic Score: ${userScore}/${totalQuestions} (${percentage}%)`;
+
+        // Share functionality
+        const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
+        const shareUrl = window.location.href.split('?')[0]; // Get current URL without query params
+
+        // Twitter Share
+        shareTwitter.addEventListener('click', () => {
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+            window.open(twitterUrl, '_blank', 'width=600,height=400');
+            showMessage('Shared on Twitter!');
+        });
+
+        // WhatsApp Share
+        shareWhatsApp.addEventListener('click', () => {
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+            window.open(whatsappUrl, '_blank');
+            showMessage('Shared on WhatsApp!');
+        });
+
+        // Copy Link
+        copyLink.addEventListener('click', () => {
+            navigator.clipboard.writeText(shareUrl).then(() => {
+                showMessage('Link copied to clipboard!');
+            }).catch(err => {
+                console.error('Failed to copy: ', err);
+                showMessage('Failed to copy link. Please try again.');
+            });
+        });
+
+        function showMessage(msg) {
+            shareMessage.textContent = msg;
+            setTimeout(() => {
+                shareMessage.textContent = '';
+            }, 3000);
+        }
 
         restartButton.addEventListener('click', () => {
             currentQuestion = 0;
