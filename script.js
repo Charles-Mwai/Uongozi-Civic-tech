@@ -246,9 +246,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Twitter Share
         shareTwitter.addEventListener('click', () => {
-            const twitterUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+            const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
             window.open(twitterUrl, '_blank', 'width=600,height=400');
-            showMessage('Shared on Twitter!');
+            showMessage('Shared on X!');
         });
 
         // WhatsApp Share
