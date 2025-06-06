@@ -1,0 +1,30 @@
+{
+  "name": "windsurf-project",
+  "version": "1.0.0",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "bash build.sh",
+    "generate-og-image": "node generate-og-image.js",
+    "start": "npm run build && netlify dev"
+  },
+  "dependencies": {
+    "@netlify/functions": "^4.0.0",
+    "canvas": "^2.11.2"
+  },
+  "devDependencies": {
+    "netlify-cli": "^12.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Charles-Mwai/Uongozi-Civic-tech.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Charles-Mwai/Uongozi-Civic-tech/issues"
+  },
+  "homepage": "https://github.com/Charles-Mwai/Uongozi-Civic-tech#readme",
+  "description": ""
+}

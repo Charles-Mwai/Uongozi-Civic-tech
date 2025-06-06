@@ -1,4 +1,35 @@
+// Function to get URL parameters
+function getUrlParams() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        name: params.get('name') ? decodeURIComponent(params.get('name')) : null,
+        score: params.get('score') ? parseInt(params.get('score')) : null,
+        total: params.get('total') ? parseInt(params.get('total')) : null,
+        percentage: params.get('percentage') ? parseInt(params.get('percentage')) : null
+    };
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+    // Check if we're loading a shared result
+    const urlParams = getUrlParams();
+    if (urlParams.name && urlParams.score !== null && urlParams.total !== null) {
+        // We have shared result data, show the results directly
+        document.getElementById('step1').style.display = 'none';
+        document.getElementById('step2').style.display = 'none';
+        document.getElementById('step3').style.display = 'block';
+        
+        // Create the score graphic with the shared data
+        createScoreGraphic(
+            urlParams.name, 
+            urlParams.score, 
+            urlParams.total, 
+            urlParams.percentage || Math.round((urlParams.score / urlParams.total) * 100)
+        );
+        
+        // Update the page title
+        document.title = `${urlParams.name}'s Civic Knowledge Score | Uongozi Civic Tech`;
+    }
+    
     const questions = [
         {
             question: "What is the main role of the Independent Electoral and Boundaries Commission (IEBC)?",
@@ -318,26 +349,64 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Share functionality
         const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
-        const shareUrl = window.location.href.split('?')[0]; // Get current URL without query params
+        
+        // Update URL with score parameters for sharing
+        const shareParams = new URLSearchParams({
+            name: encodeURIComponent(userName),
+            score: userScore,
+            total: totalQuestions,
+            percentage: percentage
+        });
+        
+        const shareUrl = `${window.location.origin}${window.location.pathname}?${shareParams.toString()}`;
+        
+        // Update Open Graph meta tags for social sharing
+        document.querySelector('meta[property="og:title"]').setAttribute('content', `${userName}'s Civic Knowledge Score: ${percentage}%`);
+        document.querySelector('meta[property="og:description"]').setAttribute('content', `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`);
+        document.querySelector('meta[property="og:url"]').setAttribute('content', shareUrl);
+        
+        // Update Twitter meta tags
+        document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${userName}'s Civic Knowledge Score: ${percentage}%`);
+        document.querySelector('meta[property="twitter:description"]').setAttribute('content', `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`);
+        document.querySelector('meta[property="twitter:url"]').setAttribute('content', shareUrl);
+        
+        // Update the page URL without reloading
+        window.history.pushState({}, '', shareUrl);
+        
+        // Update Open Graph meta tags for sharing
+        const ogImageUrl = `${window.location.origin}/.netlify/functions/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
+        
+        // Update meta tags
+        document.getElementById('og-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
+        document.getElementById('og-description').content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
+        document.getElementById('og-url').content = shareUrl;
+        document.getElementById('og-image').content = ogImageUrl;
+        
+        // Update Twitter meta tags
+        document.getElementById('twitter-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
+        document.getElementById('twitter-description').content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
+        document.getElementById('twitter-url').content = shareUrl;
+        document.getElementById('twitter-image').content = ogImageUrl;
 
         // Facebook Share
         shareFacebook.addEventListener('click', () => {
-            // For Facebook, we need to share the URL and let the page's Open Graph tags handle the preview
-            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
             window.open(facebookUrl, '_blank', 'width=600,height=400');
             showMessage('Shared on Facebook!');
         });
 
         // Twitter Share
         shareTwitter.addEventListener('click', () => {
-            const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+            const twitterText = `${userName} scored ${userScore}/${totalQuestions} on the Uongozi Civic Tech Exam!`;
+            const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
             window.open(twitterUrl, '_blank', 'width=600,height=400');
             showMessage('Shared on X!');
         });
 
         // WhatsApp Share
         shareWhatsApp.addEventListener('click', () => {
-            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(shareText + ' ' + shareUrl)}`;
+            const whatsappText = `${userName} scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! ${shareUrl}`;
+            const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
             window.open(whatsappUrl, '_blank');
             showMessage('Shared on WhatsApp!');
         });
