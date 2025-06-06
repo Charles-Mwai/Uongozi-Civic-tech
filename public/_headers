@@ -1,4 +1,4 @@
-/.netlify/functions/*
+/api/*
   Access-Control-Allow-Origin: *
   Access-Control-Allow-Methods: GET, OPTIONS
   Cache-Control: public, max-age=86400

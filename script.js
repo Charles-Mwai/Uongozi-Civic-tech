@@ -374,7 +374,7 @@ document.addEventListener('DOMContentLoaded', () => {
         window.history.pushState({}, '', shareUrl);
         
         // Update Open Graph meta tags for sharing
-        const ogImageUrl = `${window.location.origin}/.netlify/functions/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
+        const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
         
         // Update meta tags
         document.getElementById('og-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
