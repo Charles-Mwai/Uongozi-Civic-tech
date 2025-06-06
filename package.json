@@ -2,11 +2,19 @@
   "name": "windsurf-project",
   "version": "1.0.0",
   "main": "script.js",
+  "engines": {
+    "node": ">=16.0.0 <19.0.0",
+    "npm": ">=7.0.0"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "prebuild": "echo 'Starting build process...'",
     "build": "bash build.sh",
+    "postbuild": "echo 'Build completed!'",
     "generate-og-image": "node generate-og-image.js",
-    "start": "npm run build && netlify dev"
+    "start": "npm run build && netlify dev",
+    "predeploy": "npm run build",
+    "deploy": "netlify deploy --prod"
   },
   "dependencies": {
     "@netlify/functions": "^4.0.0",
