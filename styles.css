@@ -365,6 +365,10 @@ button:disabled {
     transform: translateY(0);
 }
 
+.facebook {
+    background-color: #1877F2;
+}
+
 .twitter {
     background-color: #1DA1F2;
 }
@@ -391,6 +395,30 @@ button:disabled {
 
 .restart-btn:hover {
     background-color: #1a252f !important;
+}
+
+/* Score Canvas Styles */
+.score-canvas-container {
+    margin: 20px auto;
+    max-width: 100%;
+    text-align: center;
+}
+
+#scoreCanvas {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    margin-bottom: 15px;
+    background: white;
+    padding: 20px;
+}
+
+.share-prompt {
+    font-size: 18px;
+    color: var(--primary-color);
+    margin: 10px 0 20px;
+    font-weight: 500;
 }
 
 /* Responsive Design */

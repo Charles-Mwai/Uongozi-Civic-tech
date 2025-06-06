@@ -55,17 +55,24 @@
                 
                 <div class="share-section">
                     <p>Share your score:</p>
-                    <div class="share-buttons">
-                        <button id="shareTwitter" class="share-btn twitter">
-                            <i class="fab fa-x-twitter"></i> X
-                        </button>
-                        <button id="shareWhatsApp" class="share-btn whatsapp">
-                            <i class="fab fa-whatsapp"></i> WhatsApp
-                        </button>
-                        <button id="copyLink" class="share-btn link">
-                            <i class="fas fa-link"></i> Copy Link
-                        </button>
-                    </div>
+                    <div class="score-canvas-container">
+                    <canvas id="scoreCanvas" width="600" height="400"></canvas>
+                    <p class="share-prompt">Share your civic knowledge score!</p>
+                </div>
+                <div class="share-buttons">
+                    <button id="shareFacebook" class="share-btn facebook">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </button>
+                    <button id="shareTwitter" class="share-btn twitter">
+                        <i class="fab fa-x-twitter"></i> X
+                    </button>
+                    <button id="shareWhatsApp" class="share-btn whatsapp">
+                        <i class="fab fa-whatsapp"></i> WhatsApp
+                    </button>
+                    <button id="copyLink" class="share-btn link">
+                        <i class="fas fa-link"></i> Copy Link
+                    </button>
+                </div>
                     <p id="shareMessage" class="share-message"></p>
                 </div>
                 

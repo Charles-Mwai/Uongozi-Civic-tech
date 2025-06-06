@@ -216,6 +216,76 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Create score graphic on canvas
+    function createScoreGraphic(userName, userScore, totalQuestions, percentage) {
+        const canvas = document.getElementById('scoreCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Set canvas size
+        canvas.width = 600;
+        canvas.height = 400;
+        
+        // Background
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add gradient background
+        const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+        gradient.addColorStop(0, '#f5f7fa');
+        gradient.addColorStop(1, '#c3cfe2');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        // Add title
+        ctx.fillStyle = '#2c3e50';
+        ctx.font = 'bold 28px Poppins, sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('Civic Knowledge Score', canvas.width / 2, 60);
+        
+        // Add user name
+        ctx.font = '20px Poppins, sans-serif';
+        ctx.fillText(userName, canvas.width / 2, 100);
+        
+        // Draw score circle
+        const centerX = canvas.width / 2;
+        const centerY = 200;
+        const radius = 80;
+        
+        // Draw background circle
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+        ctx.strokeStyle = '#e0e0e0';
+        ctx.lineWidth = 15;
+        ctx.stroke();
+        
+        // Draw score arc
+        const startAngle = -Math.PI / 2;
+        const endAngle = (Math.PI * 2 * percentage / 100) - (Math.PI / 2);
+        
+        ctx.beginPath();
+        ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+        ctx.strokeStyle = '#3498db';
+        ctx.lineWidth = 15;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+        
+        // Add score text
+        ctx.fillStyle = '#2c3e50';
+        ctx.font = 'bold 42px Poppins, sans-serif';
+        ctx.fillText(`${percentage}%`, centerX, centerY + 15);
+        
+        // Add score details
+        ctx.font = '18px Poppins, sans-serif';
+        ctx.fillText(`You scored ${userScore} out of ${totalQuestions}`, centerX, centerY + 60);
+        
+        // Add website URL
+        ctx.font = '14px Poppins, sans-serif';
+        ctx.fillStyle = '#7f8c8d';
+        ctx.fillText('uongozi-civic.tech', centerX, canvas.height - 30);
+        
+        return canvas.toDataURL('image/png');
+    }
+
     // Show Results
     function showResults() {
         const step2 = document.getElementById('step2');
@@ -224,11 +294,13 @@ document.addEventListener('DOMContentLoaded', () => {
         step3.classList.add('active');
         updateProgress(3); // Update progress to step 3 (results)
 
+
         const nameResult = document.getElementById('nameResult');
         const scoreResult = document.getElementById('scoreResult');
         const restartButton = document.getElementById('restartButton');
         const shareMessage = document.getElementById('shareMessage');
         const shareTwitter = document.getElementById('shareTwitter');
+        const shareFacebook = document.getElementById('shareFacebook');
         const shareWhatsApp = document.getElementById('shareWhatsApp');
         const copyLink = document.getElementById('copyLink');
 
@@ -237,12 +309,24 @@ document.addEventListener('DOMContentLoaded', () => {
         const totalQuestions = questions.length;
         const percentage = Math.round((userScore / totalQuestions) * 100);
 
-        nameResult.textContent = `Name: ${userName}`;
-        scoreResult.textContent = `Your Civic Score: ${userScore}/${totalQuestions} (${percentage}%)`;
+        // Hide the text score and show the canvas
+        nameResult.style.display = 'none';
+        scoreResult.style.display = 'none';
 
+        // Create the score graphic
+        const scoreImage = createScoreGraphic(userName, userScore, totalQuestions, percentage);
+        
         // Share functionality
         const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
         const shareUrl = window.location.href.split('?')[0]; // Get current URL without query params
+
+        // Facebook Share
+        shareFacebook.addEventListener('click', () => {
+            // For Facebook, we need to share the URL and let the page's Open Graph tags handle the preview
+            const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}&quote=${encodeURIComponent(shareText)}`;
+            window.open(facebookUrl, '_blank', 'width=600,height=400');
+            showMessage('Shared on Facebook!');
+        });
 
         // Twitter Share
         shareTwitter.addEventListener('click', () => {
@@ -258,14 +342,31 @@ document.addEventListener('DOMContentLoaded', () => {
             showMessage('Shared on WhatsApp!');
         });
 
-        // Copy Link
-        copyLink.addEventListener('click', () => {
-            navigator.clipboard.writeText(shareUrl).then(() => {
-                showMessage('Link copied to clipboard!');
-            }).catch(err => {
-                console.error('Failed to copy: ', err);
-                showMessage('Failed to copy link. Please try again.');
-            });
+        // Copy Link with Image
+        copyLink.addEventListener('click', async () => {
+            try {
+                // Create a temporary link to download the image
+                const link = document.createElement('a');
+                link.href = scoreImage;
+                link.download = `civic-score-${userName.replace(/\s+/g, '-').toLowerCase()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Also copy the URL to clipboard
+                await navigator.clipboard.writeText(shareUrl);
+                showMessage('Score image downloaded and link copied!');
+            } catch (err) {
+                console.error('Failed to save image: ', err);
+                try {
+                    // Fallback to just copying the URL
+                    await navigator.clipboard.writeText(shareUrl);
+                    showMessage('Link copied to clipboard!');
+                } catch (err2) {
+                    console.error('Failed to copy link: ', err2);
+                    showMessage('Failed to copy. Please try again.');
+                }
+            }
         });
 
         function showMessage(msg) {
