@@ -11,7 +11,9 @@
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["canvas"]
-  node_bridge = true
+  
+[functions.node_bridge]
+  # Enable Node.js compatibility for ES modules
 
 [dev]
   command = "npm start"
