@@ -67,10 +67,18 @@
                 <p id="nameResult"></p>
                 <p id="scoreResult"></p>
                 
-                <div class="share-section">
-                    <p>Share your score:</p>
-                    <div class="score-canvas-container">
-                    <canvas id="scoreCanvas" width="600" height="400"></canvas>
+                <div class="result-container">
+                    <h2>Your Score</h2>
+                    <div id="score" class="score"></div>
+                    <!-- Canvas for dynamic score display -->
+                    <div id="score-canvas-container" class="score-canvas-container">
+                        <canvas id="scoreCanvas" width="800" height="400"></canvas>
+                    </div>
+                    <!-- Embedded score image for permalinks -->
+                    <div id="embedded-score-container" class="embedded-score-container" style="display: none; margin-top: 2rem;">
+                        <h3>Shareable Score Card</h3>
+                        <img id="embedded-score-image" alt="Your Score Card" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    </div>
                     <p class="share-prompt">Share your civic knowledge score!</p>
                 </div>
                 <div class="share-buttons">

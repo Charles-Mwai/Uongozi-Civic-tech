@@ -5,7 +5,8 @@ function getUrlParams() {
         name: params.get('name') ? decodeURIComponent(params.get('name')) : null,
         score: params.get('score') ? parseInt(params.get('score')) : null,
         total: params.get('total') ? parseInt(params.get('total')) : null,
-        percentage: params.get('percentage') ? parseInt(params.get('percentage')) : null
+        percentage: params.get('percentage') ? parseInt(params.get('percentage')) : null,
+        share: params.has('share')
     };
 }
 
@@ -18,16 +19,44 @@ document.addEventListener('DOMContentLoaded', () => {
         document.getElementById('step2').style.display = 'none';
         document.getElementById('step3').style.display = 'block';
         
-        // Create the score graphic with the shared data
-        createScoreGraphic(
-            urlParams.name, 
-            urlParams.score, 
-            urlParams.total, 
-            urlParams.percentage || Math.round((urlParams.score / urlParams.total) * 100)
-        );
+        const sharedScore = urlParams.score;
+        const sharedTotal = urlParams.total;
+        const sharedName = urlParams.name;
+        const isPermalink = urlParams.share;
         
-        // Update the page title
-        document.title = `${urlParams.name}'s Civic Knowledge Score | Uongozi Civic Tech`;
+        if (sharedScore && sharedTotal) {
+            // If loading from a shared URL, show the results directly
+            const scorePercentage = urlParams.percentage || Math.round((sharedScore / sharedTotal) * 100);
+            const displayName = sharedName || 'You';
+            
+            document.getElementById('nameResult').textContent = `${displayName}'s Results:`;
+            document.getElementById('scoreResult').textContent = `You scored ${sharedScore} out of ${sharedTotal} (${scorePercentage}%)`;
+            
+            // Show the results section
+            document.getElementById('step3').style.display = 'block';
+            document.getElementById('step2').style.display = 'none';
+            document.getElementById('step1').style.display = 'none';
+            
+            // If this is a permalink (shared URL), show the embedded score image
+            if (isPermalink) {
+                const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(displayName)}&score=${sharedScore}&total=${sharedTotal}&percentage=${scorePercentage}`;
+                const embeddedImage = document.getElementById('embedded-score-image');
+                const embeddedContainer = document.getElementById('embedded-score-container');
+                
+                // Set the image source and show the container
+                embeddedImage.src = ogImageUrl;
+                embeddedContainer.style.display = 'block';
+                
+                // Hide the canvas since we're showing the image
+                document.getElementById('score-canvas-container').style.display = 'none';
+            } else {
+                // Generate the score graphic for the shared result (not a permalink)
+                createScoreGraphic(displayName, parseInt(sharedScore), parseInt(sharedTotal), scorePercentage);
+            }
+            
+            // Update the page title
+            document.title = `${displayName}'s Civic Knowledge Score | Uongozi Civic Tech`;
+        }
     }
     
     const questions = [
@@ -355,7 +384,8 @@ document.addEventListener('DOMContentLoaded', () => {
             name: encodeURIComponent(userName),
             score: userScore,
             total: totalQuestions,
-            percentage: percentage
+            percentage: percentage,
+            share: 'true'  // Add share parameter for permalinks
         });
         
         const shareUrl = `${window.location.origin}${window.location.pathname}?${shareParams.toString()}`;
