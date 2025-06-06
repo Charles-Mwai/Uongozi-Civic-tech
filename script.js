@@ -390,23 +390,13 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const shareUrl = `${window.location.origin}${window.location.pathname}?${shareParams.toString()}`;
         
-        // Update Open Graph meta tags for social sharing
-        document.querySelector('meta[property="og:title"]').setAttribute('content', `${userName}'s Civic Knowledge Score: ${percentage}%`);
-        document.querySelector('meta[property="og:description"]').setAttribute('content', `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`);
-        document.querySelector('meta[property="og:url"]').setAttribute('content', shareUrl);
-        
-        // Update Twitter meta tags
-        document.querySelector('meta[property="twitter:title"]').setAttribute('content', `${userName}'s Civic Knowledge Score: ${percentage}%`);
-        document.querySelector('meta[property="twitter:description"]').setAttribute('content', `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`);
-        document.querySelector('meta[property="twitter:url"]').setAttribute('content', shareUrl);
-        
         // Update the page URL without reloading
         window.history.pushState({}, '', shareUrl);
         
-        // Update Open Graph meta tags for sharing
+        // Generate the URL for the dynamic score image
         const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
         
-        // Update meta tags
+        // Update Open Graph meta tags
         document.getElementById('og-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
         document.getElementById('og-description').content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
         document.getElementById('og-url').content = shareUrl;
