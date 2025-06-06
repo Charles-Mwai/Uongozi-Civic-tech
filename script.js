@@ -33,7 +33,8 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('scoreResult').textContent = `You scored ${sharedScore} out of ${sharedTotal} (${scorePercentage}%)`;
             
             // Show the results section
-            document.getElementById('step3').style.display = 'block';
+            document.getElementById('step4').style.display = 'block';
+            document.getElementById('step3').style.display = 'none';
             document.getElementById('step2').style.display = 'none';
             document.getElementById('step1').style.display = 'none';
             
@@ -50,15 +51,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Hide the canvas since we're showing the image
                 document.getElementById('score-canvas-container').style.display = 'none';
             } else {
-                // Generate the score graphic for the shared result (not a permalink)
-                createScoreGraphic(displayName, parseInt(sharedScore), parseInt(sharedTotal), scorePercentage);
+                // If not a permalink, show the canvas with the score
+                createScoreGraphic(displayName, sharedScore, sharedTotal, scorePercentage);
             }
             
-            // Update the page title
-            document.title = `${displayName}'s Civic Knowledge Score | Uongozi Civic Tech`;
+            // Update the progress
+            updateProgress(4);
         }
+        
+        // Don't initialize the rest of the app
+        return;
     }
-    
+
+    // Initialize questions array
     const questions = [
         {
             question: "What is the main role of the Independent Electoral and Boundaries Commission (IEBC)?",
@@ -159,29 +164,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let currentQuestion = 0;
     let score = 0;
-    let user = null;
+    let user = {
+        name: '',
+        gender: '',
+        ageGroup: ''
+    };
 
-    // Personal Information Form
-    const personalInfoForm = document.getElementById('personalInfoForm');
-    personalInfoForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-        user = {
-            name: document.getElementById('name').value,
-            age: document.getElementById('age').value
-        };
-        showQuestion();
-    });
+        // Start exam button click handler
+    const startBtn = document.getElementById('startBtn');
+    if (startBtn) {
+        startBtn.addEventListener('click', () => {
+            // Hide step 1 and show step 2
+            document.getElementById('step1').style.display = 'none';
+            document.getElementById('step2').style.display = 'block';
+            document.getElementById('step3').style.display = 'none';
+            document.getElementById('step4').style.display = 'none';
+            
+            // Show first question
+            showQuestion();
+            updateProgress(2);
+        });
+    }
 
     // Update progress bar and step indicators
     function updateProgress(currentStep) {
         const progressBar = document.querySelector('.progress-bar');
         const steps = document.querySelectorAll('.step-indicator');
-        const progressPercentage = (currentStep / 3) * 100;
+        const progressPercentage = (currentStep / 4) * 100;
         
         progressBar.style.setProperty('--progress', `${progressPercentage}%`);
         
         steps.forEach((step, index) => {
             if (index < currentStep) {
+                step.classList.add('completed');
+            } else {
+                step.classList.remove('completed');
+            }
+            if (index === currentStep - 1) {
                 step.classList.add('active');
             } else {
                 step.classList.remove('active');
@@ -199,7 +218,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Update button text based on current question
         if (currentQuestion === questions.length - 1) {
-            nextButton.textContent = 'Show Results';
+            nextButton.textContent = 'Next';
         } else {
             nextButton.textContent = 'Next Question';
         }
@@ -264,17 +283,68 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Handle next question button click
     nextButton.addEventListener('click', () => {
-        currentQuestion++;
         if (currentQuestion < questions.length) {
             // Update button text if it's the last question
             if (currentQuestion === questions.length - 1) {
-                nextButton.textContent = 'Show Results';
+                nextButton.textContent = 'Next';
             }
+            currentQuestion++;
             showQuestion();
         } else {
-            showResults();
+            showDemographics();
         }
     });
+
+    // Show demographic info before results
+    function showDemographics() {
+        // Hide question container
+        document.getElementById('questionContainer').style.display = 'none';
+        // Show demographics step
+        document.getElementById('step3').style.display = 'block';
+        // Hide results step
+        document.getElementById('step4').style.display = 'none';
+        
+        // Update progress
+        updateProgress(3);
+    }
+
+    // Handle show results button click
+    document.getElementById('showResultsBtn').addEventListener('click', () => {
+        // Get user info from form
+        user.name = document.getElementById('userName').value;
+        user.gender = document.querySelector('input[name="gender"]:checked').value;
+        user.ageGroup = document.getElementById('ageGroup').value;
+        
+        // Validate age group is selected
+        if (!user.ageGroup) {
+            alert('Please select your age group');
+            return;
+        }
+        
+        // Show results
+        showResults();
+    });
+
+    // Show results
+    function showResults() {
+        // Hide demographics
+        document.getElementById('step3').style.display = 'none';
+        // Show results
+        document.getElementById('step4').style.display = 'block';
+        
+        // Calculate score
+        const percentage = Math.round((score / questions.length) * 100);
+        
+        // Update results
+        document.getElementById('nameResult').textContent = user.name ? `Name: ${user.name}` : '';
+        document.getElementById('scoreResult').textContent = `Your score: ${score} out of ${questions.length} (${percentage}%)`;
+        
+        // Update progress
+        updateProgress(4);
+        
+        // Show the score graphic
+        createScoreGraphic(user.name || 'You', score, questions.length, percentage);
+    }
 
     // Create score graphic on canvas
     function createScoreGraphic(userName, userScore, totalQuestions, percentage) {
@@ -346,38 +416,19 @@ document.addEventListener('DOMContentLoaded', () => {
         return canvas.toDataURL('image/png');
     }
 
-    // Show Results
-    function showResults() {
-        const step2 = document.getElementById('step2');
-        const step3 = document.getElementById('step3');
-        step2.classList.remove('active');
-        step3.classList.add('active');
-        updateProgress(3); // Update progress to step 3 (results)
+    const userScore = score;
+    const totalQuestions = questions.length;
+    const percentage = Math.round((userScore / totalQuestions) * 100);
 
+    // Hide the text score and show the canvas
+    nameResult.style.display = 'none';
+    scoreResult.style.display = 'none';
 
-        const nameResult = document.getElementById('nameResult');
-        const scoreResult = document.getElementById('scoreResult');
-        const restartButton = document.getElementById('restartButton');
-        const shareMessage = document.getElementById('shareMessage');
-        const shareTwitter = document.getElementById('shareTwitter');
-        const shareFacebook = document.getElementById('shareFacebook');
-        const shareWhatsApp = document.getElementById('shareWhatsApp');
-        const copyLink = document.getElementById('copyLink');
-
-        const userName = user.name;
-        const userScore = score;
-        const totalQuestions = questions.length;
-        const percentage = Math.round((userScore / totalQuestions) * 100);
-
-        // Hide the text score and show the canvas
-        nameResult.style.display = 'none';
-        scoreResult.style.display = 'none';
-
-        // Create the score graphic
-        const scoreImage = createScoreGraphic(userName, userScore, totalQuestions, percentage);
-        
-        // Share functionality
-        const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
+    // Create the score graphic
+    const scoreImage = createScoreGraphic(userName, userScore, totalQuestions, percentage);
+    
+    // Share functionality
+    const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
         
         // Update URL with score parameters for sharing
         const shareParams = new URLSearchParams({
@@ -432,45 +483,65 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         // Copy Link with Image
-        copyLink.addEventListener('click', async () => {
-            try {
-                // Create a temporary link to download the image
-                const link = document.createElement('a');
-                link.href = scoreImage;
-                link.download = `civic-score-${userName.replace(/\s+/g, '-').toLowerCase()}.png`;
-                document.body.appendChild(link);
-                link.click();
-                document.body.removeChild(link);
-                
-                // Also copy the URL to clipboard
-                await navigator.clipboard.writeText(shareUrl);
-                showMessage('Score image downloaded and link copied!');
-            } catch (err) {
-                console.error('Failed to save image: ', err);
+        if (copyLink) {
+            copyLink.addEventListener('click', async () => {
                 try {
-                    // Fallback to just copying the URL
+                    // Create a temporary link to download the image
+                    const link = document.createElement('a');
+                    link.href = scoreImage;
+                    link.download = `civic-score-${userName.replace(/\s+/g, '-').toLowerCase()}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Also copy the URL to clipboard
                     await navigator.clipboard.writeText(shareUrl);
-                    showMessage('Link copied to clipboard!');
-                } catch (err2) {
-                    console.error('Failed to copy link: ', err2);
-                    showMessage('Failed to copy. Please try again.');
+                    showMessage('Score image downloaded and link copied!');
+                } catch (err) {
+                    console.error('Failed to save image: ', err);
+                    try {
+                        // Fallback to just copying the URL
+                        await navigator.clipboard.writeText(shareUrl);
+                        showMessage('Link copied to clipboard!');
+                    } catch (err2) {
+                        console.error('Failed to copy link: ', err2);
+                        showMessage('Failed to copy. Please try again.');
+                    }
                 }
-            }
-        });
-
-        function showMessage(msg) {
-            shareMessage.textContent = msg;
-            setTimeout(() => {
-                shareMessage.textContent = '';
-            }, 3000);
+            });
         }
 
-        restartButton.addEventListener('click', () => {
-            currentQuestion = 0;
-            score = 0;
-            step3.classList.remove('active');
-            step1.classList.add('active');
-            personalInfoForm.reset();
-        });
-    }
-});
+        function showMessage(msg) {
+            if (shareMessage) {
+                shareMessage.textContent = msg;
+                setTimeout(() => {
+                    if (shareMessage) shareMessage.textContent = '';
+                }, 3000);
+            }
+        }
+
+        // Initialize restart button event listener
+        const restartButton = document.getElementById('restartButton');
+        if (restartButton) {
+            restartButton.addEventListener('click', () => {
+                currentQuestion = 0;
+                score = 0;
+                const step1 = document.getElementById('step1');
+                const step3 = document.getElementById('step3');
+                const personalInfoForm = document.getElementById('personalInfoForm');
+                // Hide all steps except step 1
+                const steps = document.querySelectorAll('.step');
+                if (steps.length > 0) {
+                    steps.forEach(step => {
+                        step.style.display = 'none';
+                    });
+                    if (step1) step1.style.display = 'block';
+                    if (step3) step3.classList.remove('active');
+                    if (step1) step1.classList.add('active');
+                    if (personalInfoForm) personalInfoForm.reset();
+                }
+            });
+        }
+    },
+    false
+);
