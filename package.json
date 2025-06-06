@@ -9,7 +9,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "prebuild": "echo 'Starting build process...'",
-    "build": "bash build.sh",
+    "build": "node build.js",
     "postbuild": "echo 'Build completed!'",
     "generate-og-image": "node generate-og-image.js",
     "start": "npm run build && netlify dev",

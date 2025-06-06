@@ -1,24 +1,16 @@
 [build]
-  command = "npm install -g npm@latest && npm install && npm run build"
+  command = "npm install && npm run build"
   publish = "."
   functions = "netlify/functions"
 
 [build.environment]
-  NODE_VERSION = "18"  # Uses the latest 18.x LTS version
+  NODE_VERSION = "18"
   NPM_FLAGS = "--build-from-source"
   NPM_VERBOSE = "true"
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["canvas"]
-  
-[functions.node_bridge]
-  # Enable Node.js compatibility for ES modules
-
-[dev]
-  command = "npm start"
-  targetPort = 3000
-  port = 3000
 
 [[redirects]]
   from = "/api/*"
