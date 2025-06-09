@@ -1,8 +1,5 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.protectedHandler = exports.handler = void 0;
-const auth_js_1 = require("../../../utils/auth.js");
-const queries_js_1 = require("../../../db/queries.js");
+import { requireAuth } from '../../../utils/auth.js';
+import { getScoreStats, getScoreDistribution, getScoresByDate } from '../../../db/queries.js';
 const handler = async (event) => {
     console.log('[scores] Function invoked', { method: event.httpMethod, path: event.path, event });
     if (event.httpMethod !== 'GET') {
@@ -11,9 +8,9 @@ const handler = async (event) => {
     try {
         console.log('[scores] Processing request...');
         const [stats, distribution, byDate] = await Promise.all([
-            (0, queries_js_1.getScoreStats)(),
-            (0, queries_js_1.getScoreDistribution)(),
-            (0, queries_js_1.getScoresByDate)(),
+            getScoreStats(),
+            getScoreDistribution(),
+            getScoresByDate(),
         ]);
         return {
             statusCode: 200,
@@ -39,7 +36,7 @@ const handler = async (event) => {
         };
     }
 };
-exports.handler = handler;
+export { handler };
 // Wrap the handler with requireAuth
-exports.protectedHandler = (0, auth_js_1.requireAuth)(handler);
+export const protectedHandler = requireAuth(handler);
 //# sourceMappingURL=index.js.map

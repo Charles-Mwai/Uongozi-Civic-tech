@@ -4,9 +4,8 @@ import * as schema from './schema.js';
 import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
 
-// Import logger with type assertion to handle ES module import
-// @ts-ignore - We'll create the type declaration next
-import logger from '../src/utils/logger.js';
+// Import logger wrapper that handles both ESM and CommonJS
+import logger from '../src/utils/logger-wrapper.js';
 
 // Type for the logger to avoid TypeScript errors
 type Logger = {

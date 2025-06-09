@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.requireAuth = void 0;
-const requireAuth = (handler) => {
+export const requireAuth = (handler) => {
     return async (event, context) => {
         const authHeader = event.headers.authorization || '';
         if (!authHeader.startsWith('Basic ')) {
@@ -23,5 +20,4 @@ const requireAuth = (handler) => {
         return handler(event, context);
     };
 };
-exports.requireAuth = requireAuth;
 //# sourceMappingURL=auth.js.map

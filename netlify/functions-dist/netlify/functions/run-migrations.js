@@ -1,48 +1,9 @@
-"use strict";
-var __createBinding = (this && this.__createBinding) || (Object.create ? (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    var desc = Object.getOwnPropertyDescriptor(m, k);
-    if (!desc || ("get" in desc ? !m.__esModule : desc.writable || desc.configurable)) {
-      desc = { enumerable: true, get: function() { return m[k]; } };
-    }
-    Object.defineProperty(o, k2, desc);
-}) : (function(o, m, k, k2) {
-    if (k2 === undefined) k2 = k;
-    o[k2] = m[k];
-}));
-var __setModuleDefault = (this && this.__setModuleDefault) || (Object.create ? (function(o, v) {
-    Object.defineProperty(o, "default", { enumerable: true, value: v });
-}) : function(o, v) {
-    o["default"] = v;
-});
-var __importStar = (this && this.__importStar) || (function () {
-    var ownKeys = function(o) {
-        ownKeys = Object.getOwnPropertyNames || function (o) {
-            var ar = [];
-            for (var k in o) if (Object.prototype.hasOwnProperty.call(o, k)) ar[ar.length] = k;
-            return ar;
-        };
-        return ownKeys(o);
-    };
-    return function (mod) {
-        if (mod && mod.__esModule) return mod;
-        var result = {};
-        if (mod != null) for (var k = ownKeys(mod), i = 0; i < k.length; i++) if (k[i] !== "default") __createBinding(result, mod, k[i]);
-        __setModuleDefault(result, mod);
-        return result;
-    };
-})();
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.handler = void 0;
-const serverless_1 = require("@neondatabase/serverless");
-const fs_1 = require("fs");
-const path_1 = __importDefault(require("path"));
-const neon_http_1 = require("drizzle-orm/neon-http");
-const drizzle_orm_1 = require("drizzle-orm");
-const handler = async (event, context) => {
+import { neon } from '@neondatabase/serverless';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { sql } from 'drizzle-orm';
+export const handler = async (event, context) => {
     // Only allow POST requests
     if (event.httpMethod !== 'POST') {
         return {
@@ -66,15 +27,15 @@ const handler = async (event, context) => {
             throw new Error('DATABASE_URL environment variable is not set');
         }
         // Initialize database client with type assertion
-        const client = (0, serverless_1.neon)(dbUrl); // Type assertion to bypass type checking
-        const db = (0, neon_http_1.drizzle)(client);
+        const client = neon(dbUrl); // Type assertion to bypass type checking
+        const db = drizzle(client);
         // Helper function to execute raw SQL queries
         const executeQuery = async (query, params = []) => {
             return client.query(query, params);
         };
-        const migrationsDir = path_1.default.join(process.cwd(), 'migrations');
+        const migrationsDir = path.join(process.cwd(), 'migrations');
         // Get all migration files
-        const allFiles = await fs_1.promises.readdir(migrationsDir);
+        const allFiles = await fs.readdir(migrationsDir);
         const files = allFiles
             .filter((file) => file.endsWith('.sql') && /^\d+_.+\.sql$/.test(file))
             .sort();
@@ -85,7 +46,7 @@ const handler = async (event, context) => {
             };
         }
         // Ensure migrations table exists
-        await (0, drizzle_orm_1.sql) `
+        await sql `
       CREATE TABLE IF NOT EXISTS public._migrations (
         id SERIAL PRIMARY KEY,
         name VARCHAR(255) NOT NULL UNIQUE,
@@ -103,8 +64,8 @@ const handler = async (event, context) => {
                 console.log(`Skipping already applied migration: ${file}`);
                 continue;
             }
-            const filePath = path_1.default.join(migrationsDir, file);
-            const sqlContent = await fs_1.promises.readFile(filePath, 'utf8');
+            const filePath = path.join(migrationsDir, file);
+            const sqlContent = await fs.readFile(filePath, 'utf8');
             try {
                 // Start transaction
                 await executeQuery('BEGIN');
@@ -126,7 +87,7 @@ const handler = async (event, context) => {
                     await executeQuery('ROLLBACK');
                     console.error(`❌ Transaction error in migration ${file}:`, txError);
                     // Record the failure
-                    await (0, drizzle_orm_1.sql) `
+                    await sql `
             INSERT INTO public._migrations (name, success, executed_at)
             VALUES (${file}, false, NOW())
             ON CONFLICT (name) 
@@ -164,12 +125,11 @@ const handler = async (event, context) => {
         };
     }
 };
-exports.handler = handler;
 // For local testing
 if (process.env.NETLIFY_DEV) {
     const runLocalMigrations = async () => {
         try {
-            const { config } = await Promise.resolve().then(() => __importStar(require('dotenv')));
+            const { config } = await import('dotenv');
             config({ path: '.env.local' });
             const event = {
                 httpMethod: 'POST',
@@ -177,7 +137,7 @@ if (process.env.NETLIFY_DEV) {
                     authorization: `Bearer ${process.env.MIGRATION_TOKEN || 'default-secret-token'}`
                 }
             };
-            const result = await (0, exports.handler)(event, {});
+            const result = await handler(event, {});
             console.log('Migration result:', result);
         }
         catch (error) {

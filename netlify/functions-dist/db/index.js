@@ -41,22 +41,21 @@ const neon_http_1 = require("drizzle-orm/neon-http");
 const serverless_1 = require("@neondatabase/serverless");
 const schema = __importStar(require("./schema.js"));
 const drizzle_orm_1 = require("drizzle-orm");
-// Import logger with type assertion to handle ES module import
-// @ts-ignore - We'll create the type declaration next
-const logger_js_1 = __importDefault(require("../src/utils/logger.js"));
+// Import logger wrapper that handles both ESM and CommonJS
+const logger_wrapper_js_1 = __importDefault(require("../src/utils/logger-wrapper.js"));
 // Validate required environment variables
 const requiredEnvVars = ['DATABASE_URL'];
 const missingVars = requiredEnvVars.filter(varName => !process.env[varName]);
 if (missingVars.length > 0) {
     const errorMsg = `Missing required environment variables: ${missingVars.join(', ')}`;
-    logger_js_1.default.error(errorMsg);
+    logger_wrapper_js_1.default.error(errorMsg);
     throw new Error(errorMsg);
 }
 // Log database connection attempt
 const dbUrl = process.env.DATABASE_URL;
 const dbName = dbUrl ? new URL(dbUrl).pathname.replace(/^\/+/, '') : 'unknown';
 const dbHost = dbUrl ? new URL(dbUrl).hostname : 'unknown';
-logger_js_1.default.info('Initializing database connection...', {
+logger_wrapper_js_1.default.info('Initializing database connection...', {
     database: dbName,
     host: dbHost
 });
@@ -70,21 +69,21 @@ try {
         schema,
         logger: {
             logQuery: (query, params) => {
-                logger_js_1.default.debug('Database query', {
+                logger_wrapper_js_1.default.debug('Database query', {
                     query,
                     params: params || []
                 });
             }
         }
     });
-    logger_js_1.default.info('Database connection initialized successfully');
+    logger_wrapper_js_1.default.info('Database connection initialized successfully');
 }
 catch (error) {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorName = error instanceof Error ? error.name : 'Error';
     const errorCode = error.code || 'UNKNOWN';
     const errorStack = error instanceof Error ? error.stack : '';
-    logger_js_1.default.error('Failed to initialize database connection', {
+    logger_wrapper_js_1.default.error('Failed to initialize database connection', {
         error: {
             name: errorName,
             message: errorMessage,
@@ -100,14 +99,14 @@ async function testConnection() {
         // Get the raw client from the connection pool
         const client = await db.execute((0, drizzle_orm_1.sql) `SELECT 1`);
         // If we get here, the connection is working
-        logger_js_1.default.info('Database connection test successful');
+        logger_wrapper_js_1.default.info('Database connection test successful');
         return true;
     }
     catch (error) {
         const errorMessage = error instanceof Error ? error.message : 'Unknown error';
         const errorName = error instanceof Error ? error.name : 'Error';
         const errorCode = error.code || 'UNKNOWN';
-        logger_js_1.default.error('Database connection test failed', {
+        logger_wrapper_js_1.default.error('Database connection test failed', {
             error: {
                 name: errorName,
                 message: errorMessage,
@@ -121,7 +120,7 @@ async function testConnection() {
 testConnection().catch((error) => {
     const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     const errorName = error instanceof Error ? error.name : 'Error';
-    logger_js_1.default.error('Error during database connection test', {
+    logger_wrapper_js_1.default.error('Error during database connection test', {
         error: {
             name: errorName,
             message: errorMessage

@@ -1,7 +1,4 @@
-"use strict";
-Object.defineProperty(exports, "__esModule", { value: true });
-exports.handler = void 0;
-const queries_js_1 = require("../../../db/queries.js");
+import { saveScore } from '../../../db/queries.js';
 const handler = async (event) => {
     console.log('[submit-score] Function invoked', { method: event.httpMethod, path: event.path, event });
     if (event.httpMethod !== 'POST') {
@@ -17,7 +14,7 @@ const handler = async (event) => {
                 body: JSON.stringify({ error: 'Missing required fields' }),
             };
         }
-        await (0, queries_js_1.saveScore)({
+        await saveScore({
             ageGroup,
             gender,
             score,
@@ -43,5 +40,5 @@ const handler = async (event) => {
         };
     }
 };
-exports.handler = handler;
+export { handler };
 //# sourceMappingURL=index.js.map

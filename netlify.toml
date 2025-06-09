@@ -1,17 +1,24 @@
 [build]
-  command = "npm install --loglevel verbose && npm run build"
+  command = "npm ci --no-optional --loglevel verbose && npm run build"
   publish = "public"
   functions = "netlify/functions-dist"
 
 [build.environment]
   NODE_VERSION = "20"
-  NPM_FLAGS = "--build-from-source"
+  NPM_FLAGS = "--no-optional --build-from-source"
   NPM_VERBOSE = "true"
+  NODE_ENV = "production"
+  AWS_LAMBDA_JS_RUNTIME = "nodejs20.x"
 
 [functions]
   node_bundler = "esbuild"
   external_node_modules = ["canvas"]
-  included_files = ["migrations/**"]  # Include migrations in the function bundle
+  included_files = [
+    "migrations/**",
+    "src/utils/logger-wrapper.js",
+    "src/utils/logger.js",
+    "src/utils/logger.d.ts"
+  ]  # Include required files in the function bundle
 
   # Configure the run-migrations function
   [functions.run-migrations]
