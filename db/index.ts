@@ -1,7 +1,7 @@
 import { drizzle } from 'drizzle-orm/neon-http';
-import { neon, type NeonQueryFunction } from '@neondatabase/serverless';
+import { neon } from '@neondatabase/serverless';
 import * as schema from './schema.js';
-import type { PostgresJsDatabase } from 'drizzle-orm/postgres-js';
+import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 import { sql } from 'drizzle-orm';
 
 // Import logger with type assertion to handle ES module import
@@ -37,11 +37,11 @@ const dbHost = dbUrl ? new URL(dbUrl).hostname : 'unknown';
 });
 
 // Initialize the database connection
-let db: PostgresJsDatabase<typeof schema>;
+let db: NeonHttpDatabase<typeof schema>;
 
 try {
-    const sql: NeonQueryFunction<boolean, boolean> = neon(dbUrl);
-    db = drizzle(sql, { 
+    const client = neon(dbUrl, { fullResults: true });
+    db = drizzle(client, { 
         schema,
         logger: {
             logQuery: (query: string, params: unknown[]) => {

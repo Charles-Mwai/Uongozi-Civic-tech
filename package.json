@@ -7,7 +7,7 @@
     "#src/*": "./src/*.js"
   },
   "engines": {
-    "node": ">=18.0.0",
+    "node": "18.20.0",
     "npm": ">=9.0.0"
   },
   "scripts": {
@@ -25,7 +25,7 @@
     "db:studio": "drizzle-kit studio --port 3000"
   },
   "dependencies": {
-    "@neondatabase/serverless": "^1.0.1",
+    "@neondatabase/serverless": "^0.8.0",
     "@netlify/functions": "^4.0.0",
     "@netlify/neon": "^0.1.0",
     "drizzle-orm": "^0.29.3"

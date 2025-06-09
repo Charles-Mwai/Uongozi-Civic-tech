@@ -1,7 +1,10 @@
 import { Handler } from '@netlify/functions';
-import { neon } from '@netlify/neon';
+import { neon } from '@neondatabase/serverless';
 import { promises as fs } from 'fs';
 import path from 'path';
+import { drizzle } from 'drizzle-orm/neon-http';
+import { sql } from 'drizzle-orm';
+import type { NeonHttpDatabase } from 'drizzle-orm/neon-http';
 
 // Type for migration result
 interface MigrationResult {
@@ -33,12 +36,25 @@ export const handler: Handler = async (event, context) => {
   }
 
   try {
-    const sql = neon();
+    const dbUrl = process.env.DATABASE_URL;
+    if (!dbUrl) {
+      throw new Error('DATABASE_URL environment variable is not set');
+    }
+    
+    // Initialize database client with type assertion
+    const client = neon(dbUrl) as any; // Type assertion to bypass type checking
+    const db = drizzle(client);
+  
+    // Helper function to execute raw SQL queries
+    const executeQuery = async (query: string, params: any[] = []) => {
+      return client.query(query, params);
+    };
     const migrationsDir = path.join(process.cwd(), 'migrations');
     
     // Get all migration files
-    const files = (await fs.readdir(migrationsDir))
-      .filter(file => file.endsWith('.sql') && file.match(/^\d+_.+\.sql$/))
+    const allFiles = await fs.readdir(migrationsDir);
+    const files = allFiles
+      .filter((file: string) => file.endsWith('.sql') && /^\d+_.+\.sql$/.test(file))
       .sort();
     
     if (files.length === 0) {
@@ -58,12 +74,13 @@ export const handler: Handler = async (event, context) => {
       );
     `;
     
-    // Get already applied migrations
-    const appliedMigrations = await sql`
-      SELECT name FROM public._migrations WHERE success = true;
-    `;
-    
-    const appliedMigrationNames = new Set(appliedMigrations.map(m => m.name));
+    // Get applied migrations using raw SQL
+    const appliedMigrations = await executeQuery(
+      'SELECT name FROM public._migrations WHERE success = true'
+    );
+    const appliedMigrationNames = new Set(
+      appliedMigrations.rows.map((row: any) => row.name)
+    );
     const appliedMigrationsList: string[] = [];
     
     // Apply each migration
@@ -78,29 +95,30 @@ export const handler: Handler = async (event, context) => {
       
       try {
         // Start transaction
-        await sql.unsafe('BEGIN');
+        await executeQuery('BEGIN');
         
         try {
           // Execute the migration
-          await sql.unsafe(sqlContent);
+          await executeQuery(sqlContent);
           
           // Record the migration
-          await sql`
-            INSERT INTO public._migrations (name, success, executed_at)
-            VALUES (${file}, true, NOW())
-            ON CONFLICT (name) 
-            DO UPDATE SET success = true, executed_at = NOW();
-          `;
+          await executeQuery(
+            `INSERT INTO public._migrations (name, success, executed_at)
+             VALUES ($1, true, NOW())
+             ON CONFLICT (name) 
+             DO UPDATE SET success = true, executed_at = NOW()`, 
+            [file]
+          );
           
           // Commit transaction
-          await sql.unsafe('COMMIT');
+          await executeQuery('COMMIT');
           
           appliedMigrationsList.push(file);
           console.log(`✅ Applied migration: ${file}`);
           
         } catch (txError) {
           // Rollback transaction on error
-          await sql.unsafe('ROLLBACK');
+          await executeQuery('ROLLBACK');
           console.error(`❌ Transaction error in migration ${file}:`, txError);
           
           // Record the failure
