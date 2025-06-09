@@ -17,7 +17,7 @@
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "if exist netlify\\functions-dist (rmdir /s /q netlify\\functions-dist) && mkdir netlify\\functions-dist",
+    "clean": "if [ -d netlify/functions-dist ]; then rm -r netlify/functions-dist; fi && mkdir -p netlify/functions-dist",
     "build": "npm run clean && npm run build:functions",
     "build:functions": "tsc --project tsconfig.functions.json",
     "start": "npm run build && netlify dev",
