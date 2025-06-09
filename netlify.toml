@@ -5,10 +5,15 @@
 
 [build.environment]
   NODE_VERSION = "20"
+  NPM_VERSION = "10"
   NPM_FLAGS = "--no-optional --build-from-source"
   NPM_VERBOSE = "true"
   NODE_ENV = "production"
   AWS_LAMBDA_JS_RUNTIME = "nodejs20.x"
+  NODE_OPTIONS = "--openssl-legacy-provider"
+
+[context.production]
+  command = "npm ci --no-optional --loglevel verbose && npm run build"
 
 [functions]
   node_bundler = "esbuild"
