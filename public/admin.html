@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard - Civic Education Platform</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+  <style>
+    :root {
+      --primary: #4a6fa5;
+      --secondary: #6c757d;
+      --success: #28a745;
+      --light: #f8f9fa;
+      --dark: #343a40;
+    }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f5f7fa;
+    }
+    .dashboard {
+      display: grid;
+      grid-template-columns: 250px 1fr;
+      min-height: 100vh;
+    }
+    .sidebar {
+      background: var(--dark);
+      color: white;
+      padding: 1.5rem 1rem;
+    }
+    .main {
+      padding: 2rem;
+    }
+    .card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      padding: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+    .stat-card {
+      background: white;
+      border-radius: 8px;
+      padding: 1.5rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    .stat-card h3 {
+      margin-top: 0;
+      color: var(--secondary);
+      font-size: 0.9rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .stat-card .value {
+      font-size: 2rem;
+      font-weight: 600;
+      color: var(--dark);
+      margin: 0.5rem 0;
+    }
+    .chart-container {
+      position: relative;
+      height: 300px;
+      margin-bottom: 2rem;
+    }
+    .login-container {
+      max-width: 400px;
+      margin: 5rem auto;
+      padding: 2rem;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    }
+    .login-container h1 {
+      margin-top: 0;
+      margin-bottom: 2rem;
+      text-align: center;
+      color: var(--dark);
+    }
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: var(--secondary);
+    }
+    .form-group input {
+      width: 100%;
+      padding: 0.75rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+    button {
+      background: var(--primary);
+      color: white;
+      border: none;
+      padding: 0.75rem 1.5rem;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1rem;
+      width: 100%;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Login form will be rendered here initially -->
+  </div>
+
+  <script>
+    // Admin credentials
+    let authToken = localStorage.getItem('adminAuth');
+    
+    // API base URL
+    const API_BASE = '/.netlify/functions';
+    
+    // Axios instance with auth
+    const api = axios.create({
+      baseURL: API_BASE,
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    // Add auth header if token exists
+    if (authToken) {
+      api.defaults.headers.common['Authorization'] = `Basic ${authToken}`;
+    }
+
+    // Main App Component
+    class App {
+      constructor() {
+        this.appElement = document.getElementById('app');
+        this.render();
+      }
+      
+      async render() {
+        if (!authToken) {
+          this.renderLogin();
+        } else {
+          try {
+            await this.renderDashboard();
+          } catch (error) {
+            console.error('Error loading dashboard:', error);
+            localStorage.removeItem('adminAuth');
+            window.location.reload();
+          }
+        }
+      }
+      
+      renderLogin() {
+        this.appElement.innerHTML = `
+          <div class="login-container">
+            <h1>Admin Login</h1>
+            <form id="loginForm">
+              <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" required>
+              </div>
+              <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" required>
+              </div>
+              <button type="submit">Login</button>
+            </form>
+          </div>
+        `;
+        
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+          e.preventDefault();
+          const username = document.getElementById('username').value;
+          const password = document.getElementById('password').value;
+          
+          // Store credentials in localStorage (not secure for production, just for demo)
+          const token = btoa(`${username}:${password}`);
+          localStorage.setItem('adminAuth', token);
+          authToken = token;
+          api.defaults.headers.common['Authorization'] = `Basic ${token}`;
+          
+          // Try to load dashboard
+          try {
+            await this.renderDashboard();
+          } catch (error) {
+            alert('Login failed. Please check your credentials.');
+            localStorage.removeItem('adminAuth');
+            this.renderLogin();
+          }
+        });
+      }
+      
+      async renderDashboard() {
+        // Show loading state
+        this.appElement.innerHTML = '<p>Loading dashboard...</p>';
+        
+        // Fetch data
+        const response = await api.get('/scores');
+        const { stats, distribution, byDate } = response.data;
+        
+        // Calculate total submissions
+        const totalSubmissions = stats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
+        const averageScore = stats.reduce((sum, stat) => sum + (parseFloat(stat.average) * stat.count), 0) / totalSubmissions;
+        
+        // Render dashboard
+        this.appElement.innerHTML = `
+          <div class="dashboard">
+            <div class="sidebar">
+              <h2>Admin Panel</h2>
+              <ul>
+                <li><a href="#" class="active">Dashboard</a></li>
+                <li><a href="#" id="logout">Logout</a></li>
+              </ul>
+            </div>
+            <div class="main">
+              <h1>Dashboard</h1>
+              
+              <div class="stats-grid">
+                <div class="stat-card">
+                  <h3>Total Submissions</h3>
+                  <div class="value">${totalSubmissions}</div>
+                </div>
+                <div class="stat-card">
+                  <h3>Average Score</h3>
+                  <div class="value">${averageScore.toFixed(1)}%</div>
+                </div>
+              </div>
+              
+              <div class="card">
+                <h2>Score Distribution</h2>
+                <div class="chart-container">
+                  <canvas id="scoreChart"></canvas>
+                </div>
+              </div>
+              
+              <div class="card">
+                <h2>Demographics</h2>
+                <div class="chart-container">
+                  <canvas id="demographicsChart"></canvas>
+                </div>
+              </div>
+              
+              <div class="card">
+                <h2>Recent Activity</h2>
+                <div class="chart-container">
+                  <canvas id="activityChart"></canvas>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        
+        // Initialize charts
+        this.initScoreChart(distribution);
+        this.initDemographicsChart(stats);
+        this.initActivityChart(byDate);
+        
+        // Add logout handler
+        document.getElementById('logout').addEventListener('click', (e) => {
+          e.preventDefault();
+          localStorage.removeItem('adminAuth');
+          window.location.reload();
+        });
+      }
+      
+      initScoreChart(distribution) {
+        const ctx = document.getElementById('scoreChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: distribution.map(item => item.score + '%'),
+            datasets: [{
+              label: 'Number of Users',
+              data: distribution.map(item => item.count),
+              backgroundColor: 'rgba(74, 111, 165, 0.7)',
+              borderColor: 'rgba(74, 111, 165, 1)',
+              borderWidth: 1
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Users'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Score Range (%)'
+                }
+              }
+            }
+          }
+        });
+      }
+      
+      initDemographicsChart(stats) {
+        // Group by age group and gender
+        const ageGroups = [...new Set(stats.map(stat => stat.ageGroup))].sort();
+        const genders = [...new Set(stats.map(stat => stat.gender))];
+        
+        const datasets = genders.map(gender => ({
+          label: gender,
+          data: ageGroups.map(age => {
+            const stat = stats.find(s => s.ageGroup === age && s.gender === gender);
+            return stat ? parseFloat(stat.average) : 0;
+          }),
+          backgroundColor: `hsl(${Math.random() * 360}, 70%, 70%)`,
+        }));
+        
+        const ctx = document.getElementById('demographicsChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: ageGroups,
+            datasets: datasets
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                max: 100,
+                title: {
+                  display: true,
+                  text: 'Average Score (%)'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Age Group'
+                }
+              }
+            },
+            plugins: {
+              legend: {
+                position: 'top',
+              },
+              title: {
+                display: true,
+                text: 'Average Score by Age Group and Gender'
+              }
+            }
+          }
+        });
+      }
+      
+      initActivityChart(byDate) {
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        new Chart(ctx, {
+          type: 'line',
+          data: {
+            labels: byDate.map(item => item.date),
+            datasets: [{
+              label: 'Submissions',
+              data: byDate.map(item => item.count),
+              borderColor: 'rgba(74, 111, 165, 1)',
+              backgroundColor: 'rgba(74, 111, 165, 0.1)',
+              tension: 0.3,
+              fill: true
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+              y: {
+                beginAtZero: true,
+                title: {
+                  display: true,
+                  text: 'Number of Submissions'
+                }
+              },
+              x: {
+                title: {
+                  display: true,
+                  text: 'Date'
+                }
+              }
+            }
+          }
+        });
+      }
+    }
+    
+    // Initialize the app
+    document.addEventListener('DOMContentLoaded', () => {
+      new App();
+    });
+  </script>
+</body>
+</html>

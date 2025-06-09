@@ -2,29 +2,45 @@
   "name": "windsurf-project",
   "version": "1.0.0",
   "main": "script.js",
+  "type": "module",
+  "imports": {
+    "#src/*": "./src/*.js"
+  },
   "engines": {
-    "node": ">=16.0.0 <23.0.0",
-    "npm": ">=7.0.0"
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
   },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "prebuild": "echo 'Starting build process...'",
-    "build": "node build.js",
-    "postbuild": "echo 'Build completed!'",
-    "generate-og-image": "node generate-og-image.js",
+    "build": "npm run build:functions",
+    "build:functions": "tsc --project tsconfig.functions.json",
     "start": "npm run build && netlify dev",
-    "predeploy": "npm run build",
+    "dev": "http-server -p 3000 --cors -o",
+    "dev:admin": "http-server -p 3001 --cors -o admin.html",
     "deploy": "netlify deploy --prod",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "netlify dev:exec drizzle-kit migrate",
-    "db:studio": "netlify dev:exec drizzle-kit studio"
+    "db:generate": "drizzle-kit generate:pg --config=drizzle.config.ts",
+    "db:migrate": "node scripts/run-neon-migrations.cjs",
+    "db:check": "node scripts/check-migrations-simple.cjs",
+    "db:reset": "node scripts/reset-db.cjs",
+    "db:studio": "drizzle-kit studio --port 3000"
   },
   "dependencies": {
+    "@neondatabase/serverless": "^1.0.1",
     "@netlify/functions": "^4.0.0",
-    "canvas": "^2.11.2"
+    "@netlify/neon": "^0.1.0",
+    "drizzle-orm": "^0.29.3"
   },
   "devDependencies": {
-    "netlify-cli": "^12.0.0"
+    "@types/node": "^20.10.5",
+    "@types/pg": "^8.10.9",
+    "dotenv": "^16.5.0",
+    "drizzle-kit": "^0.20.13",
+    "eslint": "^8.55.0",
+    "eslint-config-next": "14.1.0",
+    "http-server": "^14.1.1",
+    "netlify-cli": "^17.38.1",
+    "tsx": "^4.19.4",
+    "typescript": "^5.3.3"
   },
   "repository": {
     "type": "git",
