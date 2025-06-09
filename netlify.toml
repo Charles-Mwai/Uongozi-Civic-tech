@@ -1,7 +1,7 @@
 [build]
-  command = "npm install && npm run build"
-  publish = "."
-  functions = "netlify/functions"
+  command = "npm install --loglevel verbose && npm run build"
+  publish = "public"
+  functions = "netlify/functions-dist"
 
 [build.environment]
   NODE_VERSION = "18"
