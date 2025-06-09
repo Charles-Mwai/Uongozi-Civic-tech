@@ -1,7 +1,7 @@
-import { Handler } from '@netlify/functions';
+import type { Handler, HandlerEvent, HandlerContext } from '@netlify/functions';
 
-export const requireAuth = (handler: Handler): Handler => {
-  return async (event, context) => {
+export const requireAuth = (handler: Handler) => {
+  return async (event: HandlerEvent, context: HandlerContext) => {
     const authHeader = event.headers.authorization || '';
     
     if (!authHeader.startsWith('Basic ')) {

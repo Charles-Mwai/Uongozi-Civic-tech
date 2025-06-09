@@ -1,6 +1,6 @@
 import { Handler } from '@netlify/functions';
-import { requireAuth } from '../../utils/auth';
-import { getScoreStats, getScoreDistribution, getScoresByDate } from '../../db/queries';
+import { requireAuth } from '../../../utils/auth.js';
+import { getScoreStats, getScoreDistribution, getScoresByDate } from '../../../db/queries.js';
 
 const handler: Handler = async (event) => {
   console.log('[scores] Function invoked', { method: event.httpMethod, path: event.path, event });

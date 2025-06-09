@@ -1,5 +1,5 @@
 import { Handler } from '@netlify/functions';
-import { saveScore } from '../../db/queries.ts';
+import { saveScore } from '../../../db/queries.js';
 
 const handler: Handler = async (event) => {
   console.log('[submit-score] Function invoked', { method: event.httpMethod, path: event.path, event });

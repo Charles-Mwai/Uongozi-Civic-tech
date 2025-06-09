@@ -25,7 +25,8 @@
   },
   "include": [
     "src/**/*.ts",
-    "netlify/functions/**/*.ts"
+    "netlify/functions/**/*.ts",
+    "db/**/*.ts"
   ],
   "exclude": [
     "node_modules",
