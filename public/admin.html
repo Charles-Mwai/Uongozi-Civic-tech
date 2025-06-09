@@ -147,16 +147,27 @@
       }
       
       async render() {
-        if (!authToken) {
-          this.renderLogin();
-        } else {
-          try {
-            await this.renderDashboard();
-          } catch (error) {
-            console.error('Error loading dashboard:', error);
-            localStorage.removeItem('adminAuth');
-            window.location.reload();
+        try {
+          // Check if user is authenticated
+          const isAuthenticated = localStorage.getItem('isAuthenticated') === 'true';
+          if (!isAuthenticated) {
+            this.renderLogin();
+            return;
           }
+          
+          // Verify session with server
+          const response = await fetch('/.netlify/functions/check-auth');
+          const data = await response.json();
+          
+          if (response.ok && data.authenticated) {
+            await this.renderDashboard();
+          } else {
+            throw new Error('Not authenticated');
+          }
+        } catch (error) {
+          console.error('Error checking auth status:', error);
+          localStorage.removeItem('isAuthenticated');
+          this.renderLogin();
         }
       }
       
@@ -173,236 +184,380 @@
                 <label for="password">Password</label>
                 <input type="password" id="password" required>
               </div>
-              <button type="submit">Login</button>
+              <div id="error-message" style="color: #dc3545; margin-bottom: 1rem; display: none;"></div>
+              <button type="submit" id="loginButton">Login</button>
             </form>
           </div>
         `;
         
-        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('error-message');
+        const loginButton = document.getElementById('loginButton');
+        
+        loginForm.addEventListener('submit', async (e) => {
           e.preventDefault();
+          
+          // Disable the login button to prevent multiple submissions
+          loginButton.disabled = true;
+          loginButton.textContent = 'Logging in...';
+          errorMessage.style.display = 'none';
+          
           const username = document.getElementById('username').value;
           const password = document.getElementById('password').value;
           
-          // Store credentials in localStorage (not secure for production, just for demo)
-          const token = btoa(`${username}:${password}`);
-          localStorage.setItem('adminAuth', token);
-          authToken = token;
-          api.defaults.headers.common['Authorization'] = `Basic ${token}`;
-          
-          // Try to load dashboard
           try {
-            await this.renderDashboard();
+            // Call our secure authentication endpoint
+            const response = await fetch('/.netlify/functions/admin-auth', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({ username, password }),
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok && data.success) {
+              // Store a simple flag in localStorage to indicate user is authenticated
+              localStorage.setItem('isAuthenticated', 'true');
+              await this.renderDashboard();
+            } else {
+              throw new Error(data.error || 'Authentication failed. Please check your credentials.');
+            }
           } catch (error) {
-            alert('Login failed. Please check your credentials.');
-            localStorage.removeItem('adminAuth');
-            this.renderLogin();
+            console.error('Login error:', error);
+            errorMessage.textContent = error.message || 'Login failed. Please try again.';
+            errorMessage.style.display = 'block';
+            localStorage.removeItem('isAuthenticated');
+          } finally {
+            // Re-enable the login button
+            loginButton.disabled = false;
+            loginButton.textContent = 'Login';
           }
         });
       }
       
       async renderDashboard() {
         // Show loading state
-        this.appElement.innerHTML = '<p>Loading dashboard...</p>';
-        
-        // Fetch data
-        const response = await api.get('/scores');
-        const { stats, distribution, byDate } = response.data;
-        
-        // Calculate total submissions
-        const totalSubmissions = stats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
-        const averageScore = stats.reduce((sum, stat) => sum + (parseFloat(stat.average) * stat.count), 0) / totalSubmissions;
-        
-        // Render dashboard
         this.appElement.innerHTML = `
           <div class="dashboard">
             <div class="sidebar">
               <h2>Admin Panel</h2>
-              <ul>
-                <li><a href="#" class="active">Dashboard</a></li>
-                <li><a href="#" id="logout">Logout</a></li>
-              </ul>
+              <nav>
+                <a href="#" class="active">Dashboard</a>
+                <a href="#">Users</a>
+                <a href="#">Content</a>
+                <a href="#">Settings</a>
+                <a href="#" id="logoutBtn" style="color: #ff6b6b; margin-top: 2rem; display: block;">
+                  Logout
+                </a>
+              </nav>
             </div>
             <div class="main">
               <h1>Dashboard</h1>
-              
-              <div class="stats-grid">
-                <div class="stat-card">
-                  <h3>Total Submissions</h3>
-                  <div class="value">${totalSubmissions}</div>
-                </div>
-                <div class="stat-card">
-                  <h3>Average Score</h3>
-                  <div class="value">${averageScore.toFixed(1)}%</div>
-                </div>
+              <div id="loading" style="text-align: center; padding: 2rem;">
+                <p>Loading dashboard data...</p>
               </div>
-              
-              <div class="card">
-                <h2>Score Distribution</h2>
-                <div class="chart-container">
-                  <canvas id="scoreChart"></canvas>
-                </div>
+              <div id="dashboard-content" style="display: none;">
+                <!-- Content will be loaded here -->
               </div>
-              
-              <div class="card">
-                <h2>Demographics</h2>
-                <div class="chart-container">
-                  <canvas id="demographicsChart"></canvas>
-                </div>
-              </div>
-              
-              <div class="card">
-                <h2>Recent Activity</h2>
-                <div class="chart-container">
-                  <canvas id="activityChart"></canvas>
-                </div>
+              <div id="error-container" style="display: none; color: #dc3545; padding: 1rem; background: #f8d7da; border-radius: 4px; margin-top: 1rem;">
+                <!-- Error messages will be shown here -->
               </div>
             </div>
           </div>
         `;
         
-        // Initialize charts
-        this.initScoreChart(distribution);
-        this.initDemographicsChart(stats);
-        this.initActivityChart(byDate);
+        try {
+          // Fetch data
+          const response = await fetch('/.netlify/functions/scores');
+          
+          if (!response.ok) {
+            throw new Error('Failed to fetch dashboard data');
+          }
+          
+          const { stats, distribution, byDate } = await response.json();
+          
+          // Calculate total submissions and average score
+          const totalSubmissions = stats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
+          const averageScore = totalSubmissions > 0 
+            ? (stats.reduce((sum, stat) => sum + (parseFloat(stat.average) * stat.count), 0) / totalSubmissions).toFixed(1)
+            : 0;
         
-        // Add logout handler
-        document.getElementById('logout').addEventListener('click', (e) => {
-          e.preventDefault();
-          localStorage.removeItem('adminAuth');
-          window.location.reload();
-        });
+          // Update the dashboard content
+          const dashboardContent = document.getElementById('dashboard-content');
+          dashboardContent.innerHTML = `
+            <div class="stats-grid">
+              <div class="stat-card">
+                <h3>Total Submissions</h3>
+                <div class="value">${totalSubmissions}</div>
+              </div>
+              <div class="stat-card">
+                <h3>Average Score</h3>
+                <div class="value">${averageScore}%</div>
+              </div>
+            </div>
+            <div class="card">
+              <h2>Score Distribution</h2>
+              <div class="chart-container">
+                <canvas id="scoreChart"></canvas>
+              </div>
+            </div>
+            <div class="card">
+              <h2>Recent Activity</h2>
+              <div class="chart-container">
+                <canvas id="activityChart"></canvas>
+              </div>
+            </div>`;
+            
+          // Show the content and hide loading indicator
+          document.getElementById('loading').style.display = 'none';
+          dashboardContent.style.display = 'block';
+          
+          // Initialize charts if data is available
+          if (distribution && distribution.length > 0) {
+            this.initScoreChart(distribution);
+          }
+          
+          if (byDate && byDate.length > 0) {
+            this.initActivityChart(byDate);
+          }
+          
+        } catch (error) {
+          console.error('Error loading dashboard:', error);
+          document.getElementById('loading').style.display = 'none';
+          const errorContainer = document.getElementById('error-container');
+          errorContainer.textContent = 'Failed to load dashboard data. Please try again later.';
+          errorContainer.style.display = 'block';
+          
+          // Add a retry button
+          const retryButton = document.createElement('button');
+          retryButton.textContent = 'Retry';
+          retryButton.style.marginTop = '1rem';
+          retryButton.onclick = () => this.renderDashboard();
+          errorContainer.appendChild(document.createElement('br'));
+          errorContainer.appendChild(retryButton);
+        }
+        
+        // Initialize charts if data is available
+        if (distribution && distribution.length > 0) {
+          this.initScoreChart(distribution);
+        }
+        
+        if (stats && stats.length > 0) {
+          this.initDemographicsChart(stats);
+        }
+        
+        if (byDate && byDate.length > 0) {
+          this.initActivityChart(byDate);
+        }
       }
       
       initScoreChart(distribution) {
-        const ctx = document.getElementById('scoreChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: distribution.map(item => item.score + '%'),
-            datasets: [{
-              label: 'Number of Users',
-              data: distribution.map(item => item.count),
-              backgroundColor: 'rgba(74, 111, 165, 0.7)',
-              borderColor: 'rgba(74, 111, 165, 1)',
-              borderWidth: 1
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: 'Number of Users'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Score Range (%)'
+        try {
+          const canvas = document.getElementById('scoreChart');
+          if (!canvas) {
+            console.error('Score chart canvas not found');
+            return null;
+          }
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('Could not get 2D context for score chart');
+            return null;
+          }
+          
+          return new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: distribution.map(item => item.score + '%'),
+              datasets: [{
+                label: 'Number of Users',
+                data: distribution.map(item => item.count),
+                backgroundColor: 'rgba(74, 111, 165, 0.7)',
+                borderColor: 'rgba(74, 111, 165, 1)',
+                borderWidth: 1
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Number of Users'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Score Range (%)'
+                  }
                 }
               }
             }
-          }
-        });
+          });
+        } catch (error) {
+          console.error('Error initializing score chart:', error);
+          return null;
+        }
       }
       
       initDemographicsChart(stats) {
-        // Group by age group and gender
-        const ageGroups = [...new Set(stats.map(stat => stat.ageGroup))].sort();
-        const genders = [...new Set(stats.map(stat => stat.gender))];
-        
-        const datasets = genders.map(gender => ({
-          label: gender,
-          data: ageGroups.map(age => {
-            const stat = stats.find(s => s.ageGroup === age && s.gender === gender);
-            return stat ? parseFloat(stat.average) : 0;
-          }),
-          backgroundColor: `hsl(${Math.random() * 360}, 70%, 70%)`,
-        }));
-        
-        const ctx = document.getElementById('demographicsChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'bar',
-          data: {
-            labels: ageGroups,
-            datasets: datasets
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                max: 100,
-                title: {
-                  display: true,
-                  text: 'Average Score (%)'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Age Group'
-                }
-              }
+        try {
+          const canvas = document.getElementById('demographicsChart');
+          if (!canvas) {
+            console.error('Demographics chart canvas not found');
+            return null;
+          }
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('Could not get 2D context for demographics chart');
+            return null;
+          }
+          
+          // Helper function to generate random colors
+          const getRandomColor = () => {
+            const letters = '0123456789ABCDEF';
+            let color = '#';
+            for (let i = 0; i < 6; i++) {
+              color += letters[Math.floor(Math.random() * 16)];
+            }
+            return color;
+          };
+          
+          // Group by age group and gender
+          const ageGroups = [...new Set(stats.map(stat => stat.ageGroup))].sort();
+          const genders = [...new Set(stats.map(stat => stat.gender))];
+          
+          const datasets = genders.map(gender => ({
+            label: gender,
+            data: ageGroups.map(age => {
+              const stat = stats.find(s => s.ageGroup === age && s.gender === gender);
+              return stat ? parseFloat(stat.average) : 0;
+            }),
+            backgroundColor: getRandomColor(),
+            borderColor: getRandomColor(),
+            borderWidth: 1
+          }));
+          
+          return new Chart(ctx, {
+            type: 'bar',
+            data: {
+              labels: ageGroups,
+              datasets: datasets
             },
-            plugins: {
-              legend: {
-                position: 'top',
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Average Score (%)'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Age Group'
+                  }
+                }
               },
-              title: {
-                display: true,
-                text: 'Average Score by Age Group and Gender'
+              plugins: {
+                legend: {
+                  position: 'top',
+                },
+                title: {
+                  display: true,
+                  text: 'Average Score by Age Group and Gender'
+                }
               }
             }
-          }
-        });
+          });
+        } catch (error) {
+          console.error('Error initializing demographics chart:', error);
+          return null;
+        }
       }
       
       initActivityChart(byDate) {
-        const ctx = document.getElementById('activityChart').getContext('2d');
-        new Chart(ctx, {
-          type: 'line',
-          data: {
-            labels: byDate.map(item => item.date),
-            datasets: [{
-              label: 'Submissions',
-              data: byDate.map(item => item.count),
-              borderColor: 'rgba(74, 111, 165, 1)',
-              backgroundColor: 'rgba(74, 111, 165, 0.1)',
-              tension: 0.3,
-              fill: true
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              y: {
-                beginAtZero: true,
-                title: {
-                  display: true,
-                  text: 'Number of Submissions'
-                }
-              },
-              x: {
-                title: {
-                  display: true,
-                  text: 'Date'
+        try {
+          const canvas = document.getElementById('activityChart');
+          if (!canvas) {
+            console.error('Activity chart canvas not found');
+            return null;
+          }
+          
+          const ctx = canvas.getContext('2d');
+          if (!ctx) {
+            console.error('Could not get 2D context for activity chart');
+            return null;
+          }
+          
+          // Process data to group by date
+          const dates = [...new Set(byDate.map(item => item.date))].sort();
+          const datasets = [{
+            label: 'Submissions',
+            data: dates.map(date => {
+              const item = byDate.find(d => d.date === date);
+              return item ? item.count : 0;
+            }),
+            borderColor: 'rgba(75, 192, 192, 1)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            borderWidth: 1,
+            fill: true
+          }];
+          
+          return new Chart(ctx, {
+            type: 'line',
+            data: {
+              labels: dates,
+              datasets: datasets
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                y: {
+                  beginAtZero: true,
+                  title: {
+                    display: true,
+                    text: 'Number of Submissions'
+                  }
+                },
+                x: {
+                  title: {
+                    display: true,
+                    text: 'Date'
+                  }
                 }
               }
             }
-          }
-        });
+          });
+        } catch (error) {
+          console.error('Error initializing activity chart:', error);
+          return null;
+        }
       }
     }
     
     // Initialize the app
     document.addEventListener('DOMContentLoaded', () => {
-      new App();
+      const app = new App();
+      
+      // Add logout handler
+      document.addEventListener('click', (e) => {
+        if (e.target && e.target.id === 'logoutBtn') {
+          e.preventDefault();
+          localStorage.removeItem('isAuthenticated');
+          window.location.reload();
+        }
+      });
     });
   </script>
 </body>
