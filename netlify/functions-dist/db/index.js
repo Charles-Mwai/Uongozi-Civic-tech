@@ -63,8 +63,10 @@ logger_js_1.default.info('Initializing database connection...', {
 // Initialize the database connection
 let db;
 try {
-    const sql = (0, serverless_1.neon)(dbUrl);
-    exports.db = db = (0, neon_http_1.drizzle)(sql, {
+    const client = (0, serverless_1.neon)(dbUrl);
+    // Cast to any to bypass the type checking temporarily
+    const httpClient = client;
+    exports.db = db = (0, neon_http_1.drizzle)(httpClient, {
         schema,
         logger: {
             logQuery: (query, params) => {

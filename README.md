@@ -41,7 +41,7 @@ An interactive civic knowledge exam with social sharing capabilities and admin d
 
 This project is configured for deployment on Netlify. The following environment variables are required:
 
-- `NODE_VERSION`: 18.0.0
+- `NODE_VERSION`: 20.0.0
 - `DATABASE_URL`: Your Neon database connection string
 - `ADMIN_USERNAME`: Admin username for the dashboard
 - `ADMIN_PASSWORD`: Admin password (choose a strong one)

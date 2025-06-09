@@ -40,8 +40,11 @@ const dbHost = dbUrl ? new URL(dbUrl).hostname : 'unknown';
 let db: NeonHttpDatabase<typeof schema>;
 
 try {
-    const client = neon(dbUrl, { fullResults: true });
-    db = drizzle(client, { 
+    const client = neon(dbUrl);
+    // Cast to any to bypass the type checking temporarily
+    const httpClient = client as any;
+    
+    db = drizzle(httpClient, { 
         schema,
         logger: {
             logQuery: (query: string, params: unknown[]) => {

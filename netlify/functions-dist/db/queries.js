@@ -12,14 +12,25 @@ const index_js_1 = require("./index.js");
 const schema_js_1 = require("./schema.js");
 const drizzle_orm_2 = require("drizzle-orm");
 async function saveScore(scoreData) {
-    return index_js_1.db.insert(schema_js_1.userScores).values({
-        age_group: scoreData.ageGroup,
-        gender: scoreData.gender,
-        score: scoreData.score.toString(),
+    const values = {
         session_id: scoreData.sessionId,
+        age_group: scoreData.ageGroup, // Type assertion needed for enum
+        gender: scoreData.gender, // Type assertion needed for enum
+        score: scoreData.score.toString(),
         quiz_id: scoreData.quizId,
-        time_spent_seconds: scoreData.timeSpentSeconds,
-    }).returning();
+        time_spent_seconds: scoreData.timeSpentSeconds ?? 0,
+    };
+    console.log('Saving score with values:', values);
+    try {
+        const result = await index_js_1.db.insert(schema_js_1.userScores)
+            .values(values) // Type assertion to bypass type checking
+            .returning();
+        return result;
+    }
+    catch (error) {
+        console.error('Error saving score:', error);
+        throw error;
+    }
 }
 async function getScoreStats() {
     return index_js_1.db.select({
@@ -88,10 +99,10 @@ async function saveQuestionResponse(params) {
     return index_js_1.db.insert(schema_js_1.questionResponses).values({
         session_id: params.sessionId,
         question_id: params.questionId,
-        option_id: params.optionId,
-        response_text: params.responseText,
+        option_id: params.optionId || null,
+        response_text: params.responseText || null,
         is_correct: params.isCorrect,
-        points_earned: params.pointsEarned.toString(),
+        points_earned: params.pointsEarned?.toString() || '0',
     }).returning();
 }
 async function getUserQuizResults(sessionId) {
