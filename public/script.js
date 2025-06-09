@@ -1,212 +1,408 @@
+// Questions array
+const questions = [
+    {
+        question: "What is the minimum voting age in Kenya?",
+        options: ["16 years", "18 years", "21 years", "25 years"],
+        correctAnswer: 1
+    },
+    {
+        question: "How often are general elections held in Kenya?",
+        options: ["Every 3 years", "Every 4 years", "Every 5 years", "Every 6 years"],
+        correctAnswer: 2
+    },
+    {
+        question: "What is the main role of the Independent Electoral and Boundaries Commission (IEBC)?",
+        options: [
+            "To make laws for Kenya",
+            "To conduct and supervise elections and referenda",
+            "To oversee the judiciary",
+            "To manage county governments"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "Which document outlines the rights and responsibilities of Kenyan citizens?",
+        options: [
+            "The Penal Code",
+            "The Constitution of Kenya",
+            "The Elections Act",
+            "The Political Parties Act"
+        ],
+        correctAnswer: 1
+    },
+    {
+        question: "What is the main function of the National Assembly in Kenya?",
+        options: [
+            "To interpret the law",
+            "To make laws and oversee government operations",
+            "To implement government policies",
+            "To adjudicate disputes"
+        ],
+        correctAnswer: 1
+    }
+];
+
+// Helper functions
+function showStep(stepId) {
+    // Hide all steps
+    document.querySelectorAll('.step').forEach(step => {
+        step.classList.remove('active');
+    });
+    
+    // Show the requested step
+    const step = document.getElementById(stepId);
+    if (step) {
+        step.classList.add('active');
+    }
+}
+
+function startQuiz() {
+    // Reset the app state
+    appState.currentQuestion = 0;
+    appState.score = 0;
+    appState.answers = [];
+    appState.userInfo = { name: '', ageGroup: '', gender: '' };
+    
+    // Show the first question
+    showStep('exam');
+    showQuestion();
+}
+
+function submitExam() {
+    // Calculate score and show demographics form
+    appState.score = calculateScore();
+    showStep('demographics');
+}
+
+function submitDemographics() {
+    // Save user info and show results
+    appState.userInfo = {
+        name: document.getElementById('userName').value,
+        ageGroup: document.getElementById('ageGroup').value,
+        gender: document.querySelector('input[name="gender"]:checked')?.value || ''
+    };
+    
+    // Save results to server
+    saveResults();
+    
+    // Show results
+    showResults();
+}
+
+function showResults() {
+    const scoreDisplay = document.getElementById('score-display');
+    if (scoreDisplay) {
+        const percentage = Math.round((appState.score / questions.length) * 100);
+        scoreDisplay.innerHTML = `
+            <h3>${appState.userInfo.name}'s Results</h3>
+            <div class="score">
+                <span class="score-number">${appState.score}</span>
+                <span class="score-total">/ ${questions.length}</span>
+                <div class="score-percentage">${percentage}%</div>
+            </div>
+            <p>${getResultMessage(percentage)}</p>
+        `;
+    }
+    
+    showStep('results');
+}
+
+function shareResults() {
+    const percentage = Math.round((appState.score / questions.length) * 100);
+    const shareText = `I scored ${appState.score} out of ${questions.length} (${percentage}%) on the Uongozi Civic Knowledge Test!`;
+    const shareUrl = `${window.location.origin}${window.location.pathname}?share=true&name=${encodeURIComponent(appState.userInfo.name)}&score=${appState.score}&total=${questions.length}&percentage=${percentage}`;
+    
+    if (navigator.share) {
+        navigator.share({
+            title: 'My Civic Knowledge Test Results',
+            text: shareText,
+            url: shareUrl
+        }).catch(console.error);
+    } else {
+        // Fallback for browsers that don't support Web Share API
+        navigator.clipboard.writeText(`${shareText} ${shareUrl}`).then(() => {
+            alert('Link copied to clipboard!');
+        }).catch(() => {
+            // Fallback if clipboard API fails
+            prompt('Copy this link to share your results:', shareUrl);
+        });
+    }
+}
+
+function getResultMessage(percentage) {
+    if (percentage >= 80) {
+        return 'Excellent! You have a strong understanding of civic knowledge.';
+    } else if (percentage >= 60) {
+        return 'Good job! You have a solid foundation of civic knowledge.';
+    } else if (percentage >= 40) {
+        return 'Not bad! Consider learning more about civic responsibilities.';
+    } else {
+        return 'Keep learning! Check out our resources to improve your civic knowledge.';
+    }
+}
+
+function calculateScore() {
+    // Calculate score based on correct answers
+    let score = 0;
+    appState.answers.forEach((answer, index) => {
+        if (answer === questions[index].correctAnswer) {
+            score++;
+        }
+    });
+    return score;
+}
+
+async function saveResults() {
+    try {
+        const response = await fetch('/.netlify/functions/save-score', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                ...appState.userInfo,
+                score: appState.score,
+                total: questions.length,
+                answers: appState.answers
+            })
+        });
+        
+        if (!response.ok) {
+            console.error('Failed to save results');
+        }
+    } catch (error) {
+        console.error('Error saving results:', error);
+    }
+}
+
+function showQuestion() {
+    const currentQuestion = questions[appState.currentQuestion];
+    const questionElement = document.getElementById('question');
+    const optionsElement = document.getElementById('options');
+    
+    if (!currentQuestion || !questionElement || !optionsElement) return;
+    
+    // Display the question
+    questionElement.textContent = `${appState.currentQuestion + 1}. ${currentQuestion.question}`;
+    
+    // Clear previous options
+    optionsElement.innerHTML = '';
+    
+    // Create and append options
+    currentQuestion.options.forEach((option, index) => {
+        const optionElement = document.createElement('div');
+        optionElement.className = 'option';
+        optionElement.innerHTML = `
+            <input type="radio" name="answer" id="option${index}" value="${index}">
+            <label for="option${index}">${option}</label>
+        `;
+        optionsElement.appendChild(optionElement);
+    });
+    
+    // Update progress
+    updateProgressBar();
+}
+
+function updateProgressBar() {
+    const progress = ((appState.currentQuestion + 1) / questions.length) * 100;
+    const progressBar = document.querySelector('.progress-bar');
+    if (progressBar) {
+        progressBar.style.width = `${progress}%`;
+    }
+    
+    // Update step indicators
+    document.querySelectorAll('.step-indicator').forEach((indicator, index) => {
+        if (index === Math.floor((appState.currentQuestion + 1) / 5)) {
+            indicator.classList.add('active');
+        } else {
+            indicator.classList.remove('active');
+        }
+    });
+}
+
+function handleAnswer() {
+    const selectedOption = document.querySelector('.option.selected');
+    if (!selectedOption) {
+        alert('Please select an answer');
+        return false;
+    }
+    
+    const selectedIndex = Array.from(selectedOption.parentElement.children).indexOf(selectedOption);
+    const currentQ = questions[appState.currentQuestion];
+    const isCorrect = selectedIndex === currentQ.correctAnswer;
+    
+    // Save the answer
+    appState.answers[appState.currentQuestion] = selectedIndex;
+    
+    // Show feedback
+    const feedback = document.getElementById('feedback');
+    const options = document.querySelectorAll('.option');
+    const submitButton = document.getElementById('submitAnswer');
+    const nextButton = document.getElementById('nextButton');
+    
+    // Disable all options
+    options.forEach(opt => {
+        opt.style.pointerEvents = 'none';
+        opt.classList.remove('selected');
+    });
+    
+    // Mark correct and incorrect answers
+    options[currentQ.correctAnswer].classList.add('correct');
+    if (!isCorrect) {
+        selectedOption.classList.add('incorrect');
+    }
+    
+    // Show feedback message
+    if (isCorrect) {
+        feedback.innerHTML = '<div class="feedback correct">✓ Correct! Well done!</div>';
+        feedback.style.display = 'block';
+    } else {
+        feedback.innerHTML = `
+            <div class="feedback incorrect">
+                ✗ Incorrect. The correct answer is: <strong>${currentQ.options[currentQ.correctAnswer]}</strong>
+            </div>
+        `;
+        feedback.style.display = 'block';
+    }
+    
+    // Hide submit button, show next button
+    submitButton.style.display = 'none';
+    nextButton.style.display = 'block';
+    
+    // Handle next button click
+    nextButton.onclick = () => {
+        appState.currentQuestion++;
+        if (appState.currentQuestion < questions.length) {
+            showQuestion();
+        } else {
+            submitExam();
+        }
+    };
+    
+    return true;
+}
+
 // Function to get URL parameters
 function getUrlParams() {
     const params = new URLSearchParams(window.location.search);
-    return {
-        name: params.get('name') ? decodeURIComponent(params.get('name')) : null,
-        score: params.get('score') ? parseInt(params.get('score')) : null,
-        total: params.get('total') ? parseInt(params.get('total')) : null,
-        percentage: params.get('percentage') ? parseInt(params.get('percentage')) : null,
-        share: params.has('share')
-    };
+    const result = {};
+    for (const [key, value] of params.entries()) {
+        result[key] = value;
+    }
+    return result;
 }
 
+// Global state
+const appState = {
+    currentQuestion: 0,
+    score: 0,
+    answers: [],
+    userInfo: {
+        name: '',
+        ageGroup: '',
+        gender: ''
+    }
+};
+
+// Initialize the application
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize event listeners
+    document.getElementById('startQuiz')?.addEventListener('click', startQuiz);
+    document.getElementById('nextBtn')?.addEventListener('click', handleAnswer);
+    
+    const demographicsForm = document.getElementById('demographicsForm');
+    if (demographicsForm) {
+        demographicsForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            submitDemographics();
+        });
+    }
+    
+    // Handle restart button
+    const restartBtn = document.getElementById('restart-btn');
+    if (restartBtn) {
+        restartBtn.addEventListener('click', () => {
+            // Reset app state
+            appState.currentQuestion = 0;
+            appState.score = 0;
+            appState.answers = [];
+            appState.userInfo = { name: '', ageGroup: '', gender: '' };
+            
+            // Reset form
+            const form = document.getElementById('demographicsForm');
+            if (form) form.reset();
+            
+            // Restart the quiz
+            showStep('landing');
+        });
+    }
+    
+    // Handle share button
+    const shareBtn = document.getElementById('share-btn');
+    if (shareBtn) {
+        shareBtn.addEventListener('click', shareResults);
+    }
+    
     // Check if we're loading a shared result
     const urlParams = getUrlParams();
-    if (urlParams.name && urlParams.score !== null && urlParams.total !== null) {
+    if (urlParams.name && urlParams.score && urlParams.total) {
         // We have shared result data, show the results directly
-        document.getElementById('step1').style.display = 'none';
-        document.getElementById('step2').style.display = 'none';
-        document.getElementById('step3').style.display = 'block';
+        const score = parseInt(urlParams.score);
+        const total = parseInt(urlParams.total);
+        const percentage = Math.round((score / total) * 100);
         
-        const sharedScore = urlParams.score;
-        const sharedTotal = urlParams.total;
-        const sharedName = urlParams.name;
-        const isPermalink = urlParams.share;
-        
-        if (sharedScore && sharedTotal) {
-            // If loading from a shared URL, show the results directly
-            const scorePercentage = urlParams.percentage || Math.round((sharedScore / sharedTotal) * 100);
-            const displayName = sharedName || 'You';
-            
-            document.getElementById('nameResult').textContent = `${displayName}'s Results:`;
-            document.getElementById('scoreResult').textContent = `You scored ${sharedScore} out of ${sharedTotal} (${scorePercentage}%)`;
-            
-            // Show the results section
-            document.getElementById('step4').style.display = 'block';
-            document.getElementById('step3').style.display = 'none';
-            document.getElementById('step2').style.display = 'none';
-            document.getElementById('step1').style.display = 'none';
-            
-            // If this is a permalink (shared URL), show the embedded score image
-            if (isPermalink) {
-                const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(displayName)}&score=${sharedScore}&total=${sharedTotal}&percentage=${scorePercentage}`;
-                const embeddedImage = document.getElementById('embedded-score-image');
-                const embeddedContainer = document.getElementById('embedded-score-container');
-                
-                // Set the image source and show the container
-                embeddedImage.src = ogImageUrl;
-                embeddedContainer.style.display = 'block';
-                
-                // Hide the canvas since we're showing the image
-                document.getElementById('score-canvas-container').style.display = 'none';
-            } else {
-                // If not a permalink, show the canvas with the score
-                createScoreGraphic(displayName, sharedScore, sharedTotal, scorePercentage);
-            }
-            
-            // Update the progress
-            updateProgress(4);
+        // Update the results display
+        const scoreDisplay = document.getElementById('score-display');
+        if (scoreDisplay) {
+            scoreDisplay.innerHTML = `
+                <h3>${decodeURIComponent(urlParams.name)}'s Results</h3>
+                <div class="score">
+                    <span class="score-number">${score}</span>
+                    <span class="score-total">/ ${total}</span>
+                    <div class="score-percentage">${percentage}%</div>
+                </div>
+                <p>${getResultMessage(percentage)}</p>
+                <p class="shared-notice">This is a shared result</p>
+            `;
         }
         
+        // Show the results step
+        showStep('results');
+        
+        // Hide the share button for shared results
+        const shareBtn = document.getElementById('share-btn');
+        if (shareBtn) {
+            shareBtn.style.display = 'none';
+        }
+                
         // Don't initialize the rest of the app
         return;
     }
 
-    // Initialize questions array
-    const questions = [
-        {
-            question: "What is the main role of the Independent Electoral and Boundaries Commission (IEBC)?",
-            options: [
-                "To make laws for Kenya",
-                "To register political parties",
-                "To manage elections and referenda",
-                "To appoint judges"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "How often are General Elections held in Kenya?",
-            options: [
-                "Every 3 years",
-                "Every 4 years",
-                "Every 5 years",
-                "Every 6 years"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "Which of the following is NOT a role of a Member of Parliament (MP)?",
-            options: [
-                "Representing their constituency",
-                "Judging court cases",
-                "Making laws",
-                "Oversight of the executive"
-            ],
-            correctAnswer: 1
-        },
-        {
-            question: "Who is allowed to vote in Kenyan elections?",
-            options: [
-                "Any resident of Kenya",
-                "Only government employees",
-                "Kenyan citizens aged 18 and above, and registered to vote",
-                "People with a driving license"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "Which of the following elective positions is voted for in a General Election?",
-            options: [
-                "Cabinet Secretaries",
-                "Principal Secretaries",
-                "Chief Justice",
-                "Members of County Assembly (MCAs)"
-            ],
-            correctAnswer: 3
-        },
-        {
-            question: "How many elective positions does a Kenyan voter typically vote for in a General Election?",
-            options: ["2", "4", "6", "7"],
-            correctAnswer: 2
-        },
-        {
-            question: "What is the term limit for a President in Kenya?",
-            options: [
-                "5 years",
-                "10 years",
-                "Two 5-year terms",
-                "Unlimited"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "What is the main document that guides how Kenya is governed?",
-            options: [
-                "Presidential Decree",
-                "The Constitution of Kenya, 2010",
-                "Party Manifesto",
-                "County Budget"
-            ],
-            correctAnswer: 1
-        },
-        {
-            question: "What does 'devolution' mean in the context of the Kenyan Constitution?",
-            options: [
-                "Giving more powers to the President",
-                "Transferring power from counties to the national government",
-                "Sharing power and resources between the national and county governments",
-                "Reducing the number of government jobs"
-            ],
-            correctAnswer: 2
-        },
-        {
-            question: "Who is the head of a county government?",
-            options: [
-                "Senator",
-                "County Commissioner",
-                "Governor",
-                "Member of Parliament"
-            ],
-            correctAnswer: 2
+    // Initialize the quiz with the first question
+    showQuestion();
+});
+
+function updateProgress(currentStep) {
+    const progressBar = document.querySelector('.progress-bar');
+    const steps = document.querySelectorAll('.step-indicator');
+    const progressPercentage = (currentStep / 4) * 100;
+    
+    progressBar.style.setProperty('--progress', `${progressPercentage}%`);
+    
+    steps.forEach((step, index) => {
+        if (index < currentStep) {
+            step.classList.add('completed');
+        } else {
+            step.classList.remove('completed');
         }
-    ];
-
-    let currentQuestion = 0;
-    let score = 0;
-    let user = {
-        name: '',
-        gender: '',
-        ageGroup: ''
-    };
-
-        // Start exam button click handler
-    const startBtn = document.getElementById('startBtn');
-    if (startBtn) {
-        startBtn.addEventListener('click', () => {
-            // Hide step 1 and show step 2
-            document.getElementById('step1').style.display = 'none';
-            document.getElementById('step2').style.display = 'block';
-            document.getElementById('step3').style.display = 'none';
-            document.getElementById('step4').style.display = 'none';
-            
-            // Show first question
-            showQuestion();
-            updateProgress(2);
-        });
-    }
-
-    // Update progress bar and step indicators
-    function updateProgress(currentStep) {
-        const progressBar = document.querySelector('.progress-bar');
-        const steps = document.querySelectorAll('.step-indicator');
-        const progressPercentage = (currentStep / 4) * 100;
-        
-        progressBar.style.setProperty('--progress', `${progressPercentage}%`);
-        
-        steps.forEach((step, index) => {
-            if (index < currentStep) {
-                step.classList.add('completed');
-            } else {
-                step.classList.remove('completed');
-            }
-            if (index === currentStep - 1) {
-                step.classList.add('active');
-            } else {
-                step.classList.remove('active');
-            }
-        });
-    }
+        if (index === currentStep - 1) {
+            step.classList.add('active');
+        } else {
+            step.classList.remove('active');
+        }
+    });
+}
 
     // Show Question
     function showQuestion() {
@@ -216,33 +412,47 @@ document.addEventListener('DOMContentLoaded', () => {
         step2.classList.add('active');
         updateProgress(2); // Update progress to step 2 (questions)
         
-        // Update button text based on current question
-        if (currentQuestion === questions.length - 1) {
-            nextButton.textContent = 'Next';
-        } else {
-            nextButton.textContent = 'Next Question';
-        }
-
         const questionText = document.getElementById('questionText');
         const options = document.getElementById('options');
         const submitButton = document.getElementById('submitAnswer');
         const feedback = document.getElementById('feedback');
-
-        // Display question number and total questions (e.g., "1/10")
-        questionText.innerHTML = `<span class="question-number">${currentQuestion + 1}/${questions.length}</span> ${questions[currentQuestion].question}`;
+        const nextButton = document.getElementById('nextButton');
+        
+        // Reset UI state
         options.innerHTML = '';
         feedback.textContent = '';
+        feedback.style.display = 'none';
         submitButton.disabled = true;
+        submitButton.style.display = 'block';
+        nextButton.style.display = 'none';
+        
+        // Update button text based on current question
+        if (appState.currentQuestion === questions.length - 1) {
+            nextButton.textContent = 'Finish Quiz';
+        } else {
+            nextButton.textContent = 'Next Question';
+        }
 
-        questions[currentQuestion].options.forEach((option, index) => {
+        // Display question number and total questions (e.g., "1/10")
+        const currentQ = questions[appState.currentQuestion];
+        questionText.innerHTML = `
+            <div class="question-number">Question ${appState.currentQuestion + 1} of ${questions.length}</div>
+            <div class="question-text">${currentQ.question}</div>
+        `;
+
+        // Create options
+        currentQ.options.forEach((option, index) => {
             const optionDiv = document.createElement('div');
             optionDiv.className = 'option';
             optionDiv.textContent = option;
             optionDiv.addEventListener('click', () => {
-                const selectedOptions = document.querySelectorAll('.option.selected');
-                selectedOptions.forEach(opt => opt.classList.remove('selected'));
-                optionDiv.classList.add('selected');
-                submitButton.disabled = false;
+                // Only allow selection if no answer has been submitted yet
+                if (nextButton.style.display !== 'block') {
+                    const selectedOptions = document.querySelectorAll('.option.selected');
+                    selectedOptions.forEach(opt => opt.classList.remove('selected'));
+                    optionDiv.classList.add('selected');
+                    submitButton.disabled = false;
+                }
             });
             options.appendChild(optionDiv);
         });
@@ -430,118 +640,130 @@ document.addEventListener('DOMContentLoaded', () => {
     // Share functionality
     const shareText = `I scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! Test your civic knowledge now!`;
         
-        // Update URL with score parameters for sharing
-        const shareParams = new URLSearchParams({
-            name: encodeURIComponent(userName),
-            score: userScore,
-            total: totalQuestions,
-            percentage: percentage,
-            share: 'true'  // Add share parameter for permalinks
-        });
-        
-        const shareUrl = `${window.location.origin}${window.location.pathname}?${shareParams.toString()}`;
-        
-        // Update the page URL without reloading
-        window.history.pushState({}, '', shareUrl);
-        
-        // Generate the URL for the dynamic score image
-        const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
-        
-        // Update Open Graph meta tags
-        document.getElementById('og-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
-        document.getElementById('og-description').content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
-        document.getElementById('og-url').content = shareUrl;
-        document.getElementById('og-image').content = ogImageUrl;
-        
-        // Update Twitter meta tags
-        document.getElementById('twitter-title').content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
-        document.getElementById('twitter-description').content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
-        document.getElementById('twitter-url').content = shareUrl;
-        document.getElementById('twitter-image').content = ogImageUrl;
+    // Update URL with score parameters for sharing
+    const shareParams = new URLSearchParams({
+        name: encodeURIComponent(userName),
+        score: userScore,
+        total: totalQuestions,
+        percentage: percentage,
+        share: 'true'  // Add share parameter for permalinks
+    });
+    
+    const shareUrl = `${window.location.origin}${window.location.pathname}?${shareParams.toString()}`;
+    
+    // Update the page URL without reloading
+    window.history.pushState({}, '', shareUrl);
+    
+    // Generate the URL for the dynamic score image
+    const ogImageUrl = `${window.location.origin}/api/og-image?name=${encodeURIComponent(userName)}&score=${userScore}&total=${totalQuestions}&percentage=${percentage}`;
+    
+    // Update Open Graph meta tags
+    const ogTitle = document.getElementById('og-title');
+    const ogDescription = document.getElementById('og-description');
+    const ogUrl = document.getElementById('og-url');
+    const ogImage = document.getElementById('og-image');
+    const twitterTitle = document.getElementById('twitter-title');
+    const twitterDescription = document.getElementById('twitter-description');
+    const twitterUrl = document.getElementById('twitter-url');
+    const twitterImage = document.getElementById('twitter-image');
 
-        // Facebook Share
+    if (ogTitle) ogTitle.content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
+    if (ogDescription) ogDescription.content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
+    if (ogUrl) ogUrl.content = shareUrl;
+    if (ogImage) ogImage.content = ogImageUrl;
+    if (twitterTitle) twitterTitle.content = `${userName}'s Civic Knowledge Score: ${percentage}%`;
+    if (twitterDescription) twitterDescription.content = `Scored ${userScore} out of ${totalQuestions} on the Uongozi Civic Tech Exam!`;
+    if (twitterUrl) twitterUrl.content = shareUrl;
+    if (twitterImage) twitterImage.content = ogImageUrl;
+
+    // Set up share buttons
+    const shareFacebook = document.getElementById('shareFacebook');
+    const shareTwitter = document.getElementById('shareTwitter');
+    const shareWhatsApp = document.getElementById('shareWhatsApp');
+    const copyLink = document.getElementById('copyLink');
+
+    if (shareFacebook) {
         shareFacebook.addEventListener('click', () => {
             const facebookUrl = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
             window.open(facebookUrl, '_blank', 'width=600,height=400');
             showMessage('Shared on Facebook!');
         });
+    }
 
-        // Twitter Share
+    if (shareTwitter) {
         shareTwitter.addEventListener('click', () => {
             const twitterText = `${userName} scored ${userScore}/${totalQuestions} on the Uongozi Civic Tech Exam!`;
-            const twitterUrl = `https://x.com/intent/post?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
-            window.open(twitterUrl, '_blank', 'width=600,height=400');
+            const twitterShareUrl = `https://x.com/intent/post?text=${encodeURIComponent(twitterText)}&url=${encodeURIComponent(shareUrl)}`;
+            window.open(twitterShareUrl, '_blank', 'width=600,height=400');
             showMessage('Shared on X!');
         });
+    }
 
-        // WhatsApp Share
+    if (shareWhatsApp) {
         shareWhatsApp.addEventListener('click', () => {
             const whatsappText = `${userName} scored ${userScore}/${totalQuestions} (${percentage}%) on the Uongozi Civic Tech Exam! ${shareUrl}`;
             const whatsappUrl = `https://wa.me/?text=${encodeURIComponent(whatsappText)}`;
             window.open(whatsappUrl, '_blank');
             showMessage('Shared on WhatsApp!');
         });
+    }
 
-        // Copy Link with Image
-        if (copyLink) {
-            copyLink.addEventListener('click', async () => {
+    // Copy Link with Image
+    if (copyLink) {
+        copyLink.addEventListener('click', async () => {
+            try {
+                // Create a temporary link to download the image
+                const link = document.createElement('a');
+                link.href = scoreImage;
+                link.download = `civic-score-${userName.replace(/\s+/g, '-').toLowerCase()}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                // Also copy the URL to clipboard
+                await navigator.clipboard.writeText(shareUrl);
+                showMessage('Score image downloaded and link copied!');
+            } catch (err) {
+                console.error('Failed to save image: ', err);
                 try {
-                    // Create a temporary link to download the image
-                    const link = document.createElement('a');
-                    link.href = scoreImage;
-                    link.download = `civic-score-${userName.replace(/\s+/g, '-').toLowerCase()}.png`;
-                    document.body.appendChild(link);
-                    link.click();
-                    document.body.removeChild(link);
-                    
-                    // Also copy the URL to clipboard
+                    // Fallback to just copying the URL
                     await navigator.clipboard.writeText(shareUrl);
-                    showMessage('Score image downloaded and link copied!');
-                } catch (err) {
-                    console.error('Failed to save image: ', err);
-                    try {
-                        // Fallback to just copying the URL
-                        await navigator.clipboard.writeText(shareUrl);
-                        showMessage('Link copied to clipboard!');
-                    } catch (err2) {
-                        console.error('Failed to copy link: ', err2);
-                        showMessage('Failed to copy. Please try again.');
-                    }
+                    showMessage('Link copied to clipboard!');
+                } catch (err2) {
+                    console.error('Failed to copy link: ', err2);
+                    showMessage('Failed to copy. Please try again.');
                 }
-            });
-        }
-
-        function showMessage(msg) {
-            if (shareMessage) {
-                shareMessage.textContent = msg;
-                setTimeout(() => {
-                    if (shareMessage) shareMessage.textContent = '';
-                }, 3000);
             }
-        }
+        });
+    }
 
-        // Initialize restart button event listener
-        const restartButton = document.getElementById('restartButton');
-        if (restartButton) {
-            restartButton.addEventListener('click', () => {
-                currentQuestion = 0;
-                score = 0;
-                const step1 = document.getElementById('step1');
-                const step3 = document.getElementById('step3');
-                const personalInfoForm = document.getElementById('personalInfoForm');
-                // Hide all steps except step 1
-                const steps = document.querySelectorAll('.step');
-                if (steps.length > 0) {
-                    steps.forEach(step => {
-                        step.style.display = 'none';
-                    });
-                    if (step1) step1.style.display = 'block';
-                    if (step3) step3.classList.remove('active');
-                    if (step1) step1.classList.add('active');
-                    if (personalInfoForm) personalInfoForm.reset();
-                }
-            });
+    function showMessage(msg) {
+    const shareMessage = document.getElementById('share-message');
+    if (shareMessage) {
+        shareMessage.textContent = msg;
+        setTimeout(() => {
+            if (shareMessage) shareMessage.textContent = '';
+        }, 3000);
+    }
+}
+
+// Initialize restart button event listener
+const restartButton = document.getElementById('restart-btn');
+if (restartButton) {
+    restartButton.addEventListener('click', () => {
+        // Reset app state
+        appState.currentQuestion = 0;
+        appState.score = 0;
+        appState.answers = [];
+        appState.userInfo = { name: '', ageGroup: '', gender: '' };
+        
+        // Reset UI
+        const demographicsForm = document.getElementById('demographicsForm');
+        if (demographicsForm) {
+            demographicsForm.reset();
         }
-    },
-    false
-);
+        
+        // Show landing page
+        showStep('landing');
+    });
+}

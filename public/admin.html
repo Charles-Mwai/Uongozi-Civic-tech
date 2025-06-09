@@ -269,19 +269,54 @@
         `;
         
         try {
-          // Fetch data
-          const response = await fetch('/.netlify/functions/scores');
-          
-          if (!response.ok) {
-            throw new Error('Failed to fetch dashboard data');
+          // Fetch data with error handling
+          let stats, distribution, byDate;
+          try {
+            const response = await fetch('/.netlify/functions/scores');
+            if (!response.ok) {
+              throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            const data = await response.json();
+            stats = data.stats || [];
+            distribution = data.distribution || [];
+            byDate = data.byDate || [];
+          } catch (error) {
+            console.error('Error fetching dashboard data:', error);
+            // Use mock data if the API call fails
+            stats = [
+              { ageGroup: '18-24', gender: 'male', average: '75', count: 10 },
+              { ageGroup: '25-34', gender: 'female', average: '82', count: 15 },
+              { ageGroup: '35-44', gender: 'male', average: '68', count: 8 },
+              { ageGroup: '45-54', gender: 'female', average: '90', count: 12 },
+              { ageGroup: '55+', gender: 'male', average: '78', count: 5 }
+            ];
+            distribution = [
+              { score: '0-20', count: 2 },
+              { score: '21-40', count: 5 },
+              { score: '41-60', count: 8 },
+              { score: '61-80', count: 15 },
+              { score: '81-100', count: 20 }
+            ];
+            byDate = [
+              { date: '2023-01-01', count: 5 },
+              { date: '2023-01-02', count: 8 },
+              { date: '2023-01-03', count: 12 },
+              { date: '2023-01-04', count: 15 },
+              { date: '2023-01-05', count: 10 }
+            ];
+            
+            // Show warning about using mock data
+            const errorContainer = document.getElementById('error-container');
+            if (errorContainer) {
+              errorContainer.textContent = 'Warning: Using mock data. Could not connect to the server.';
+              errorContainer.style.display = 'block';
+            }
           }
           
-          const { stats, distribution, byDate } = await response.json();
-          
           // Calculate total submissions and average score
-          const totalSubmissions = stats.reduce((sum, stat) => sum + parseInt(stat.count), 0);
+          const totalSubmissions = stats.reduce((sum, stat) => sum + parseInt(stat.count || 0), 0);
           const averageScore = totalSubmissions > 0 
-            ? (stats.reduce((sum, stat) => sum + (parseFloat(stat.average) * stat.count), 0) / totalSubmissions).toFixed(1)
+            ? (stats.reduce((sum, stat) => sum + (parseFloat(stat.average || 0) * parseInt(stat.count || 0)), 0) / totalSubmissions).toFixed(1)
             : 0;
         
           // Update the dashboard content

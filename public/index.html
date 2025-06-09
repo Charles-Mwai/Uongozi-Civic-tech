@@ -47,13 +47,71 @@
         </div>
     </header>
     <div class="container">
-        <div id="step1" class="step active">
-            <h2>You're 18 and above. You're Eligible to Vote. But Are You Ready?</h2>
-            <p class="cta-text">Take This Test!</p>
-            <button id="startBtn" class="btn">Start Exam</button>
+        <div id="landing" class="step active">
+            <div class="landing-content">
+                <h1>Test Your Civic Knowledge</h1>
+                <p>Take our quiz to test your understanding of civic responsibilities and rights.</p>
+                <button id="startQuiz" class="btn-primary">Start Quiz</button>
+            </div>
+        </div>
+        <!-- Exam Step -->
+        <div id="exam" class="step">
+            <div id="question-container">
+                <div id="question"></div>
+                <div id="options" class="options"></div>
+                <button id="nextBtn" class="btn">Next</button>
+            </div>
         </div>
 
-        <div id="step2" class="step">
+        <!-- Demographics Step -->
+        <div id="demographics" class="step">
+            <h2>Almost Done!</h2>
+            <p>Please provide some information to help us understand our users better.</p>
+            
+            <form id="demographicsForm">
+                <div class="form-group">
+                    <label for="userName">Your Name:</label>
+                    <input type="text" id="userName" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="ageGroup">Age Group:</label>
+                    <select id="ageGroup" required>
+                        <option value="">Select Age Group</option>
+                        <option value="18-24">18-24</option>
+                        <option value="25-34">25-34</option>
+                        <option value="35-44">35-44</option>
+                        <option value="45-54">45-54</option>
+                        <option value="55-64">55-64</option>
+                        <option value="65+">65+</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label>Gender:</label>
+                    <div class="radio-group">
+                        <label><input type="radio" name="gender" value="male" required> Male</label>
+                        <label><input type="radio" name="gender" value="female"> Female</label>
+                        <label><input type="radio" name="gender" value="other"> Other</label>
+                        <label><input type="radio" name="gender" value="prefer-not-to-say"> Prefer not to say</label>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn">See My Results</button>
+            </form>
+        </div>
+
+        <!-- Results Step -->
+        <div id="results" class="step">
+            <h2>Your Results</h2>
+            <div id="results-container">
+                <div id="score-display"></div>
+                <div id="share-buttons">
+                    <button id="share-btn" class="btn">Share Your Score</button>
+                    <button id="restart-btn" class="btn">Take Test Again</button>
+                </div>
+            </div>
+        </div>
             <h2>Step 2: Civic Questions</h2>
             <div id="questionContainer">
                 <div id="questionText"></div>

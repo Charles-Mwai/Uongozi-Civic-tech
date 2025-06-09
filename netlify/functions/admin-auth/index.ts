@@ -6,6 +6,11 @@ const CORS_HEADERS = {
   'Access-Control-Allow-Methods': 'POST, OPTIONS'
 };
 
+const JSON_HEADERS = {
+  'Content-Type': 'application/json',
+  ...CORS_HEADERS
+};
+
 export const handler: Handler = async (event) => {
   // Handle preflight requests
   if (event.httpMethod === 'OPTIONS') {
@@ -15,16 +20,18 @@ export const handler: Handler = async (event) => {
       body: ''
     };
   }
+
   // Only allow POST requests
   if (event.httpMethod !== 'POST') {
     return {
       statusCode: 405,
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Method not allowed' })
     };
   }
 
   try {
-    // Get the request body
+    // Get admin credentials from environment variables
     const { username, password } = JSON.parse(event.body || '{}');
     
     // Get environment variables

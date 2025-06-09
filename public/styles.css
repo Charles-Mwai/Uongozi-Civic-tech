@@ -511,6 +511,120 @@ button:disabled {
     padding: 20px;
 }
 
+/* Question and Answer Styles */
+.question-number {
+    font-size: 1rem;
+    color: #666;
+    margin-bottom: 10px;
+}
+
+.question-text {
+    font-size: 1.25rem;
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+#options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.option {
+    background: #f8f9fa;
+    border: 2px solid #dee2e6;
+    border-radius: 8px;
+    padding: 12px 15px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.option:hover {
+    background: #e9ecef;
+    border-color: #adb5bd;
+}
+
+.option.selected {
+    background: #e7f5ff;
+    border-color: #4dabf7;
+}
+
+.option.correct {
+    background: #ebfbee;
+    border-color: #40c057;
+    color: #2b8a3e;
+}
+
+.option.incorrect {
+    background: #fff5f5;
+    border-color: #ff8787;
+    color: #c92a2a;
+    text-decoration: line-through;
+    opacity: 0.8;
+}
+
+/* Feedback Styles */
+#feedback {
+    margin: 20px 0;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.feedback {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.feedback.correct {
+    color: #2b8a3e;
+    background: #ebfbee;
+    border-left: 4px solid #40c057;
+    padding: 15px;
+}
+
+.feedback.incorrect {
+    color: #c92a2a;
+    background: #fff5f5;
+    border-left: 4px solid #ff6b6b;
+    padding: 15px;
+}
+
+/* Button Styles */
+#submitAnswer, #nextButton {
+    background: #4dabf7;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 24px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background 0.2s ease;
+    width: 100%;
+    margin-top: 10px;
+}
+
+#submitAnswer:hover, #nextButton:hover {
+    background: #339af0;
+}
+
+#submitAnswer:disabled, #nextButton:disabled {
+    background: #adb5bd;
+    cursor: not-allowed;
+}
+
+#nextButton {
+    display: none;
+    background: #40c057;
+}
+
+#nextButton:hover {
+    background: #37b24d;
+}
+
 .share-prompt {
     font-size: 18px;
     color: var(--primary-color);

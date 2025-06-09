@@ -2,8 +2,9 @@ import { Handler } from '@netlify/functions';
 
 const CORS_HEADERS = {
   'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Headers': 'Content-Type',
-  'Access-Control-Allow-Methods': 'GET, OPTIONS'
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+  'Access-Control-Allow-Methods': 'GET, OPTIONS',
+  'Content-Type': 'application/json'
 };
 
 export const handler: Handler = async (event) => {
@@ -20,36 +21,31 @@ export const handler: Handler = async (event) => {
   if (event.httpMethod !== 'GET') {
     return {
       statusCode: 405,
-      headers: {
-        'Content-Type': 'application/json',
-        ...CORS_HEADERS
-      },
-      body: JSON.stringify({ error: 'Method Not Allowed' }),
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Method Not Allowed' })
     };
   }
 
   try {
     // In a production app, you'd want to validate a session token or JWT here
+    // For now, we'll just check if the request has an Authorization header
+    const authHeader = event.headers?.authorization || '';
+    const isAuthenticated = authHeader.startsWith('Bearer ');
+    
     return {
       statusCode: 200,
-      headers: {
-        'Content-Type': 'application/json',
-        ...CORS_HEADERS
-      },
+      headers: CORS_HEADERS,
       body: JSON.stringify({ 
-        authenticated: true,
+        authenticated: isAuthenticated,
         timestamp: new Date().toISOString()
-      }),
+      })
     };
   } catch (error) {
     console.error('Auth check error:', error);
     return {
       statusCode: 500,
-      headers: {
-        'Content-Type': 'application/json',
-        ...CORS_HEADERS
-      },
-      body: JSON.stringify({ error: 'Internal server error' }),
+      headers: CORS_HEADERS,
+      body: JSON.stringify({ error: 'Internal Server Error' })
     };
   }
 };
