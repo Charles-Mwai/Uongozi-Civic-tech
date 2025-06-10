@@ -1,109 +1,142 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uongozi Civic Ed Quiz</title>
-    <link rel="stylesheet" href="styles.css">
+<html lang="en" class="dark">
+<head><link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Uongozi Civic Ed Quiz</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: '#1d4ed8',
+            secondary: '#64748b',
+          }
+        }
+      }
+    };
+  </script>
 </head>
-<body>
-    <div class="container">
-        <header>
-            <h1>Uongozi Civic Ed Quiz</h1>
-            <div class="progress-steps">
-                <span class="step-indicator" data-step="1">Welcome</span>
-                <span class="step-indicator" data-step="2">Exam</span>
-                <span class="step-indicator" data-step="3">Info</span>
-                <span class="step-indicator" data-step="4">Results</span>
-            </div>
-        </header>
+<body class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-100">
+  <div class="max-w-4xl mx-auto px-4 py-6">
+    <header class="mb-6 text-center">
+      <h1 class="text-3xl font-bold text-blue-800 dark:text-blue-300">Uongozi Civic Ed Quiz</h1>
+      <div class="flex justify-center space-x-2 mt-4 text-sm">
+        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full" data-step="1">Welcome</span>
+        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="2">Exam</span>
+        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="3">Info</span>
+        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="4">Results</span>
+      </div>
+    <div class="mt-4 flex justify-end">
+  <button id="themeToggle" class="bg-gray-200 dark:bg-gray-700 text-sm text-gray-800 dark:text-gray-100 px-3 py-1 rounded">
+    Toggle Dark Mode
+  </button>
+</div>
+</header>
 
-        <main id="quiz-container">
-            <!-- Step 1: Landing Page -->
-            <div id="landing" class="step active">
-                <h2>Test Your Civic Knowledge</h2>
-                <p>Welcome to the Uongozi Civic Ed Quiz. Click the button below to begin.</p>
-                <button id="startQuiz" class="btn">Start Exam</button>
-            </div>
+    <main id="quiz-container">
+      <!-- Step 1: Landing Page -->
+      <div id="landing" class="step active text-center">
+        <h2 class="text-2xl font-semibold mb-2">Test Your Civic Knowledge</h2>
+        <p class="mb-4">Welcome to the Uongozi Civic Ed Quiz. Click the button below to begin.</p>
+        <button id="startQuiz" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Start Exam</button>
+      </div>
 
-            <!-- Step 2: Exam Questions -->
-            <div id="exam" class="step">
-                <div id="progress-container">
-                    <div id="progress-text"></div>
-                    <div class="progress-bar-container">
-                        <div id="progress-bar"></div>
-                    </div>
-                </div>
-                <div id="question-container"></div>
-                <button id="submitAnswerBtn" class="btn" disabled>Submit Answer</button>
-                <button id="nextQuestionBtn" class="btn" style="display: none;">Next Question</button>
-            </div>
+      <!-- Step 2: Exam Questions -->
+      <div id="exam" class="step hidden">
+        <div class="mb-4">
+          <div id="progress-text" class="mb-1 text-sm text-gray-700 dark:text-gray-300"></div>
+          <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
+            <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
+          </div>
+        </div>
+        <div id="question-container" class="mb-6"></div>
+        <div class="space-x-2">
+          <button id="submitAnswerBtn" class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" disabled>Submit Answer</button>
+          <button id="nextQuestionBtn" class="bg-green-600 text-white px-4 py-2 rounded hidden">Next Question</button>
+        </div>
+      </div>
 
-            <!-- Step 3: User Info Form -->
-            <div id="user-info" class="step">
-                <h2>Almost Done!</h2>
-                <p>Please provide a few details to see your results.</p>
-                <form id="demographicsForm">
-                    <div class="form-group">
-                        <label for="userName">Name (Optional)</label>
-                        <input type="text" id="userName" placeholder="Enter your name">
-                    </div>
-                    <div class="form-group">
-                        <label for="ageGroup">Age Group</label>
-                        <select id="ageGroup" name="ageGroup" required>
-                            <option value="">Select an age group</option>
-                            <option value="18-24">18-24</option>
-                            <option value="25-34">25-34</option>
-                            <option value="35-44">35-44</option>
-                            <option value="45-54">45-54</option>
-                            <option value="55-64">55-64</option>
-                            <option value="65-70">65-70</option>
-                            <option value="71+">71+</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label>Gender</label>
-                        <div class="gender-options">
-                            <label><input type="radio" name="gender" value="male" required> Male</label>
-                            <label><input type="radio" name="gender" value="female"> Female</label>
-                            <label><input type="radio" name="gender" value="other"> Other</label>
-                        </div>
-                    </div>
-                    <button type="submit" class="btn">Show My Results</button>
-                </form>
+      <!-- Step 3: User Info Form -->
+      <div id="user-info" class="step hidden">
+        <h2 class="text-2xl font-semibold mb-2">Almost Done!</h2>
+        <p class="mb-4">Please provide a few details to see your results.</p>
+        <form id="demographicsForm" class="space-y-4">
+          <div>
+            <label for="userName" class="block text-sm font-medium">Name (Optional)</label>
+            <input type="text" id="userName" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800" placeholder="Enter your name">
+          </div>
+          <div>
+            <label for="ageGroup" class="block text-sm font-medium">Age Group</label>
+            <select id="ageGroup" class="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded bg-white dark:bg-gray-800" required>
+              <option value="">Select an age group</option>
+              <option value="18-24">18-24</option>
+              <option value="25-34">25-34</option>
+              <option value="35-44">35-44</option>
+              <option value="45-54">45-54</option>
+              <option value="55-64">55-64</option>
+              <option value="65-70">65-70</option>
+              <option value="71+">71+</option>
+            </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium">Gender</label>
+            <div class="space-x-4 mt-1">
+              <label><input type="radio" name="gender" value="male" required> Male</label>
+              <label><input type="radio" name="gender" value="female"> Female</label>
+              <label><input type="radio" name="gender" value="other"> Other</label>
             </div>
+          </div>
+          <button type="submit" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Show My Results</button>
+        </form>
+      </div>
 
-            <!-- Step 4: Results -->
-            <div id="results" class="step" style="text-align: center;">
-                <h2>Quiz Results</h2>
-                <div class="results-graphic">
-                    <svg width="150" height="150" viewBox="0 0 36 36" class="circular-chart">
-                        <path class="circle-bg"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <path class="circle"
-                            stroke-dasharray="0, 100"
-                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
-                        />
-                        <text x="18" y="20.35" class="percentage-text">0%</text>
-                    </svg>
-                </div>
-                <div id="score-text" style="font-size: 1.2rem; margin-top: 1rem;"></div>
-                <div id="results-message" style="margin: 1rem 0; font-size: 1.1rem; font-weight: 500;"></div>
-                <div id="share-section">
-                    <p>Share your results!</p>
-                    <div class="share-buttons">
-                        <button id="shareFacebook" class="btn share-btn">Facebook</button>
-                        <button id="shareTwitter" class="btn share-btn">Twitter</button>
-                        <button id="shareWhatsApp" class="btn share-btn">WhatsApp</button>
-                        <button id="copyLink" class="btn share-btn">Copy Link</button>
-                    </div>
-                    <p id="share-message"></p>
-                </div>
-                <button id="restart-btn" class="btn">Take Again</button>
-            </div>
-        </main>
-    </div>
-    <script src="script.js"></script>
+      <!-- Step 4: Results -->
+      <div id="results" class="step hidden text-center">
+        <h2 class="text-2xl font-semibold mb-4">Quiz Results</h2>
+        <div class="results-graphic mx-auto mb-4">
+          <svg width="150" height="150" viewBox="0 0 36 36" class="circular-chart">
+            <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <path class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+            <text x="18" y="20.35" class="percentage-text" text-anchor="middle" alignment-baseline="middle" font-size="8">0%</text>
+          </svg>
+        </div>
+        <div id="score-text" class="text-lg font-medium mb-2"></div>
+        <div id="results-message" class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4"></div>
+
+        <div id="share-section" class="mb-4">
+          <p class="mb-2">Share your results!</p>
+          <div class="flex flex-wrap justify-center gap-2">
+            <button id="shareFacebook" class="bg-blue-700 text-white px-4 py-2 rounded">Facebook</button>
+            <button id="shareTwitter" class="bg-blue-500 text-white px-4 py-2 rounded">Twitter</button>
+            <button id="shareWhatsApp" class="bg-green-500 text-white px-4 py-2 rounded">WhatsApp</button>
+            <button id="copyLink" class="bg-gray-600 text-white px-4 py-2 rounded">Copy Link</button>
+          </div>
+          <p id="share-message" class="text-sm text-green-600 mt-2"></p>
+        </div>
+
+        <button id="restart-btn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Take Again</button>
+      </div>
+    </main>
+  </div>
+  <script>
+  const toggleBtn = document.getElementById('themeToggle');
+  const html = document.documentElement;
+
+  if (localStorage.getItem('theme') === 'dark') {
+    html.classList.add('dark');
+  } else {
+    html.classList.remove('dark');
+  }
+
+  toggleBtn.addEventListener('click', () => {
+    html.classList.toggle('dark');
+    const isDark = html.classList.contains('dark');
+    localStorage.setItem('theme', isDark ? 'dark' : 'light');
+  });
+</script>
+<script src="script.js"></script>
 </body>
 </html>
