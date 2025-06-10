@@ -22,22 +22,15 @@
 <body class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-100">
   <div class="max-w-4xl mx-auto px-4 py-6">
     <header class="mb-6 text-center">
-      <h1 class="text-3xl font-bold text-blue-800 dark:text-blue-300">Uongozi Civic Ed Quiz</h1>
-      <div class="flex justify-center space-x-2 mt-4 text-sm">
-        <span class="px-3 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full" data-step="1">Welcome</span>
-        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="2">Exam</span>
-        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="3">Info</span>
-        <span class="px-3 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 rounded-full" data-step="4">Results</span>
-      </div>
-    
+  <h1 class="text-3xl font-bold text-blue-800 dark:text-blue-300">Uongozi Civic Ed Quiz</h1>
 </header>
 
     <main id="quiz-container">
       <!-- Step 1: Landing Page -->
-      <div id="landing" class="step active text-center">
-        <h2 class="text-2xl font-semibold mb-2">Test Your Civic Knowledge</h2>
-        <p class="mb-4">Welcome to the Uongozi Civic Ed Quiz. Click the button below to begin.</p>
-        <button id="startQuiz" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Start Exam</button>
+      <div id="landing" class="step active text-center px-6 sm:px-12 md:px-20 lg:px-32 py-12">
+        <h2 class="text-3xl font-bold mb-4 leading-snug">Test Your Civic Knowledge</h2>
+        <p class="mb-6 text-lg text-gray-300">Welcome to the Uongozi Civic Ed Quiz. Click the button below to begin.</p>
+        <button id="startQuiz" class="bg-blue-600 text-white px-8 py-3 text-lg rounded hover:bg-blue-700 transition-all">Start Exam</button>
       </div>
 
       <!-- Step 2: Exam Questions -->
@@ -57,8 +50,8 @@
 
       <!-- Step 3: User Info Form -->
       <div id="user-info" class="step hidden">
-        <h2 class="text-2xl font-semibold mb-2">Almost Done!</h2>
-        <p class="mb-4">Please provide a few details to see your results.</p>
+        <h2 class="text-2xl font-semibold mb-2">One last step!</h2>
+        <p class="mb-4">You're seconds away from seeing your results.Mind telling us a bit about yourself first?</p>
         <form id="demographicsForm" class="space-y-4">
           <div>
             <label for="userName" class="block text-sm font-medium">Name (Optional)</label>
@@ -90,16 +83,18 @@
       </div>
 
       <!-- Step 4: Results -->
-      <div id="results" class="step hidden text-center">
-        <h2 class="text-2xl font-semibold mb-4">Quiz Results</h2>
-        <div class="results-graphic mx-auto mb-4">
+      <div id="results" class="step hidden text-center px-6 sm:px-12 md:px-24 lg:px-32 py-12 space-y-6">
+        <h2 class="text-4xl font-bold mb-6 text-blue-400">Your Results</h2>
+        <div class="flex justify-center mb-6">
+  <div class="results-graphic">
           <svg width="150" height="150" viewBox="0 0 36 36" class="circular-chart">
             <path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <path class="circle" stroke-dasharray="0, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
             <text x="18" y="20.35" class="percentage-text" text-anchor="middle" alignment-baseline="middle" font-size="8">0%</text>
           </svg>
-        </div>
-        <div id="score-text" class="text-lg font-medium mb-2"></div>
+          </div>
+</div>
+<div id="score-text" class="text-lg font-medium mb-2"></div>
         <div id="results-message" class="text-base font-semibold text-gray-700 dark:text-gray-300 mb-4"></div>
 
         <div id="share-section" class="mb-4">
@@ -113,7 +108,7 @@
           <p id="share-message" class="text-sm text-green-600 mt-2"></p>
         </div>
 
-        <button id="restart-btn" class="bg-blue-600 text-white px-6 py-2 rounded hover:bg-blue-700">Take Again</button>
+        <button id="restart-btn" class="bg-blue-600 text-white px-8 py-3 text-lg rounded hover:bg-blue-700 mt-6">Take Again</button>
       </div>
     </main>
   </div>
