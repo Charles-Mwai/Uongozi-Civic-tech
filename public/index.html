@@ -3,210 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Uongozi Civic Tech - Examination</title>
-    
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
-    <link rel="icon" type="image/jpg" sizes="192x192" href="/logo.jpg">
-    <link rel="apple-touch-icon" href="/logo.jpg">
-    <link rel="shortcut icon" href="/favicon.ico">
-    <meta name="theme-color" content="#ffffff">
-    
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" id="og-url" content="https://uongozi-civic-tech-u6ei4.netlify.app/">
-    <meta property="og:title" id="og-title" content="Uongozi Civic Tech - Test Your Knowledge">
-    <meta property="og:description" id="og-description" content="Take our civic tech quiz and test your knowledge!">
-    <meta property="og:image" id="og-image" content="https://uongozi-civic-tech-u6ei4.netlify.app/logo.jpg">
-    <meta property="og:image:width" content="1200">
-    <meta property="og:image:height" content="630">
-    <meta property="og:image:alt" content="Uongozi Civic Tech Logo">
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" id="twitter-url" content="https://uongozi-civic-tech-u6ei4.netlify.app/">
-    <meta property="twitter:title" id="twitter-title" content="Uongozi Civic Tech - Test Your Knowledge">
-    <meta property="twitter:description" id="twitter-description" content="Take our civic tech quiz and test your knowledge!">
-    <meta property="twitter:image" id="twitter-image" content="https://uongozi-civic-tech-u6ei4.netlify.app/logo.jpg">
-    <meta property="twitter:image:alt" content="Uongozi Civic Tech Logo">
+    <title>Uongozi Civic Ed Quiz</title>
     <link rel="stylesheet" href="styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <header class="header">
-        <div class="logo">Uongozi Civic Tech</div>
-        <div class="progress-container">
-            <div class="progress-bar" id="progressBar"></div>
-            <div class="progress-steps">
-                <div class="step-indicator active" data-step="1">1</div>
-                <div class="step-indicator" data-step="2">2</div>
-                <div class="step-indicator" data-step="3">3</div>
-                <div class="step-indicator" data-step="4">4</div>
-            </div>
-        </div>
-    </header>
     <div class="container">
-        <div id="landing" class="step active">
-            <div class="landing-content">
-                <h1>Test Your Civic Knowledge</h1>
-                <p>Take our quiz to test your understanding of civic responsibilities and rights.</p>
-                <button id="startQuiz" class="btn-primary">Start Quiz</button>
+        <header>
+            <h1>Uongozi Civic Ed Quiz</h1>
+            <div class="progress-steps">
+                <span class="step-indicator" data-step="1">Welcome</span>
+                <span class="step-indicator" data-step="2">Exam</span>
+                <span class="step-indicator" data-step="3">Info</span>
+                <span class="step-indicator" data-step="4">Results</span>
             </div>
-        </div>
-        <!-- Exam Step -->
-        <div id="exam" class="step">
-            <div id="question-container">
-                <div id="question"></div>
-                <div id="options" class="options"></div>
-                <button id="nextBtn" class="btn">Next</button>
-            </div>
-        </div>
+        </header>
 
-        <!-- Demographics Step -->
-        <div id="demographics" class="step">
-            <h2>Almost Done!</h2>
-            <p>Please provide some information to help us understand our users better.</p>
-            
-            <form id="demographicsForm">
-                <div class="form-group">
-                    <label for="userName">Your Name:</label>
-                    <input type="text" id="userName" required>
-                </div>
-                
-                <div class="form-group">
-                    <label for="ageGroup">Age Group:</label>
-                    <select id="ageGroup" required>
-                        <option value="">Select Age Group</option>
-                        <option value="18-24">18-24</option>
-                        <option value="25-34">25-34</option>
-                        <option value="35-44">35-44</option>
-                        <option value="45-54">45-54</option>
-                        <option value="55-64">55-64</option>
-                        <option value="65+">65+</option>
-                    </select>
-                </div>
-                
-                <div class="form-group">
-                    <label>Gender:</label>
-                    <div class="radio-group">
-                        <label><input type="radio" name="gender" value="male" required> Male</label>
-                        <label><input type="radio" name="gender" value="female"> Female</label>
-                        <label><input type="radio" name="gender" value="other"> Other</label>
-                        <label><input type="radio" name="gender" value="prefer-not-to-say"> Prefer not to say</label>
+        <main id="quiz-container">
+            <!-- Step 1: Landing Page -->
+            <div id="landing" class="step active">
+                <h2>Test Your Civic Knowledge</h2>
+                <p>Welcome to the Uongozi Civic Ed Quiz. Click the button below to begin.</p>
+                <button id="startQuiz" class="btn">Start Exam</button>
+            </div>
+
+            <!-- Step 2: Exam Questions -->
+            <div id="exam" class="step">
+                <div id="progress-container">
+                    <div id="progress-text"></div>
+                    <div class="progress-bar-container">
+                        <div id="progress-bar"></div>
                     </div>
                 </div>
-                
-                <button type="submit" class="btn">See My Results</button>
-            </form>
-        </div>
+                <div id="question-container"></div>
+                <button id="submitAnswerBtn" class="btn" disabled>Submit Answer</button>
+                <button id="nextQuestionBtn" class="btn" style="display: none;">Next Question</button>
+            </div>
 
-        <!-- Results Step -->
-        <div id="results" class="step">
-            <h2>Your Results</h2>
-            <div id="results-container">
-                <div id="score-display"></div>
-                <div id="share-buttons">
-                    <button id="share-btn" class="btn">Share Your Score</button>
-                    <button id="restart-btn" class="btn">Take Test Again</button>
-                </div>
-            </div>
-        </div>
-            <h2>Step 2: Civic Questions</h2>
-            <div id="questionContainer">
-                <div id="questionText"></div>
-                <div id="options"></div>
-                <button id="submitAnswer" disabled>Submit Answer</button>
-                <div id="feedback"></div>
-            </div>
-        </div>
-
-        <div id="step3" class="step">
-            <h2>One last step!</h2>
-            <p class="subtitle">You're seconds away from seeing your results.</p>
-            <p class="subtitle">Mind telling us a bit about yourself first?</p>
-            
-            <div class="form-group">
-                <label for="userName">Name (If you want!)</label>
-                <input type="text" id="userName" name="userName">
-            </div>
-            
-            <div class="form-group">
-                <label>Gender</label>
-                <div class="radio-group">
-                    <label class="radio-label">
-                        <input type="radio" name="gender" value="male" checked> Male
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="gender" value="female"> Female
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="gender" value="other"> Other
-                    </label>
-                    <label class="radio-label">
-                        <input type="radio" name="gender" value="prefer-not-to-say"> Prefer not to say
-                    </label>
-                </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="ageGroup">Age Group</label>
-                <select id="ageGroup" name="ageGroup" class="form-control" required>
-                    <option value="" disabled selected>Select your age group</option>
-                    <option value="18-24">18–24</option>
-                    <option value="25-34">25–34</option>
-                    <option value="35-44">35–44</option>
-                    <option value="45-54">45–54</option>
-                    <option value="55-64">55–64</option>
-                    <option value="65-70">65–70</option>
-                    <option value="71+">71+</option>
-                </select>
-            </div>
-            
-            <button id="showResultsBtn" class="btn">See My Results</button>
-        </div>
-
-        <div id="step4" class="step">
-            <h2>Your Results</h2>
-            <div id="results">
-                <h3>Congratulations!</h3>
-                <p id="nameResult"></p>
-                <p id="scoreResult"></p>
-                
-                <div class="result-container">
-                    <h2>Your Score</h2>
-                    <div id="score" class="score"></div>
-                    <!-- Canvas for dynamic score display -->
-                    <div id="score-canvas-container" class="score-canvas-container">
-                        <canvas id="scoreCanvas" width="800" height="400"></canvas>
+            <!-- Step 3: User Info Form -->
+            <div id="user-info" class="step">
+                <h2>Almost Done!</h2>
+                <p>Please provide a few details to see your results.</p>
+                <form id="demographicsForm">
+                    <div class="form-group">
+                        <label for="userName">Name (Optional)</label>
+                        <input type="text" id="userName" placeholder="Enter your name">
                     </div>
-                    <!-- Embedded score image for permalinks -->
-                    <div id="embedded-score-container" class="embedded-score-container" style="display: none; margin-top: 2rem;">
-                        <h3>Shareable Score Card</h3>
-                        <img id="embedded-score-image" alt="Your Score Card" style="max-width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                    <div class="form-group">
+                        <label for="ageGroup">Age Group</label>
+                        <select id="ageGroup" name="ageGroup" required>
+                            <option value="">Select an age group</option>
+                            <option value="18-24">18-24</option>
+                            <option value="25-34">25-34</option>
+                            <option value="35-44">35-44</option>
+                            <option value="45-54">45-54</option>
+                            <option value="55-64">55-64</option>
+                            <option value="65-70">65-70</option>
+                            <option value="71+">71+</option>
+                        </select>
                     </div>
-                    <p class="share-prompt">Share your civic knowledge score!</p>
-                </div>
-                <div class="share-buttons">
-                    <button id="shareFacebook" class="share-btn facebook">
-                        <i class="fab fa-facebook-f"></i> Facebook
-                    </button>
-                    <button id="shareTwitter" class="share-btn twitter">
-                        <i class="fab fa-x-twitter"></i> X
-                    </button>
-                    <button id="shareWhatsApp" class="share-btn whatsapp">
-                        <i class="fab fa-whatsapp"></i> WhatsApp
-                    </button>
-                    <button id="copyLink" class="share-btn link">
-                        <i class="fas fa-link"></i> Copy Link
-                    </button>
-                </div>
-                    <p id="shareMessage" class="share-message"></p>
-                </div>
-                
-                <button id="restartButton" class="restart-btn">Take Exam Again</button>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <div class="gender-options">
+                            <label><input type="radio" name="gender" value="male" required> Male</label>
+                            <label><input type="radio" name="gender" value="female"> Female</label>
+                            <label><input type="radio" name="gender" value="other"> Other</label>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn">Show My Results</button>
+                </form>
             </div>
-        </div>
+
+            <!-- Step 4: Results -->
+            <div id="results" class="step" style="text-align: center;">
+                <h2>Quiz Results</h2>
+                <div class="results-graphic">
+                    <svg width="150" height="150" viewBox="0 0 36 36" class="circular-chart">
+                        <path class="circle-bg"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <path class="circle"
+                            stroke-dasharray="0, 100"
+                            d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831"
+                        />
+                        <text x="18" y="20.35" class="percentage-text">0%</text>
+                    </svg>
+                </div>
+                <div id="score-text" style="font-size: 1.2rem; margin-top: 1rem;"></div>
+                <div id="results-message" style="margin: 1rem 0; font-size: 1.1rem; font-weight: 500;"></div>
+                <div id="share-section">
+                    <p>Share your results!</p>
+                    <div class="share-buttons">
+                        <button id="shareFacebook" class="btn share-btn">Facebook</button>
+                        <button id="shareTwitter" class="btn share-btn">Twitter</button>
+                        <button id="shareWhatsApp" class="btn share-btn">WhatsApp</button>
+                        <button id="copyLink" class="btn share-btn">Copy Link</button>
+                    </div>
+                    <p id="share-message"></p>
+                </div>
+                <button id="restart-btn" class="btn">Take Again</button>
+            </div>
+        </main>
     </div>
     <script src="script.js"></script>
 </body>

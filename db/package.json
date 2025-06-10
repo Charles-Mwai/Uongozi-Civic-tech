@@ -3,5 +3,8 @@
   "name": "db",
   "version": "1.0.0",
   "private": true,
-  "main": "index.js"
+  "main": "index.js",
+  "dependencies": {
+    "db": "file:"
+  }
 }

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Dashboard</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Chart.js CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body class="bg-gray-100 text-gray-900">
+
+  <div class="min-h-screen p-6">
+    <header class="mb-6">
+      <h1 class="text-3xl font-bold">Admin Dashboard</h1>
+      <p class="text-gray-600">User demographics overview</p>
+    </header>
+
+    <main class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+      <!-- Gender/Age Demographics Chart -->
+      <div class="bg-white rounded-lg shadow p-6 col-span-2">
+        <h2 class="text-lg font-semibold mb-4">Gender/Age Demographics</h2>
+        <canvas id="genderAgeChart" height="100"></canvas>
+      </div>
+
+      <!-- Placeholder for additional dashboard cards -->
+      <div class="bg-white rounded-lg shadow p-6">
+        <h2 class="text-lg font-semibold mb-4">Other Stats</h2>
+        <p class="text-gray-500">Coming soon...</p>
+      </div>
+    </main>
+  </div>
+
+  <!-- Demographics Chart Script -->
+  <script>
+    const ctx = document.getElementById('genderAgeChart').getContext('2d');
+
+    const genderAgeChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: ['<18', '18-24', '25-34', '35-44', '45+'],
+        datasets: [
+          {
+            label: 'Male',
+            data: [5, 10, 8, 4, 2],
+            backgroundColor: 'rgba(54, 162, 235, 0.7)'
+          },
+          {
+            label: 'Female',
+            data: [6, 12, 9, 5, 3],
+            backgroundColor: 'rgba(255, 99, 132, 0.7)'
+          },
+          {
+            label: 'Other',
+            data: [1, 2, 1, 0, 1],
+            backgroundColor: 'rgba(153, 102, 255, 0.7)'
+          }
+        ]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: {
+            position: 'top',
+          },
+          title: {
+            display: false
+          }
+        },
+        scales: {
+          x: {
+            stacked: true
+          },
+          y: {
+            beginAtZero: true,
+            stacked: true
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

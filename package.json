@@ -34,8 +34,11 @@
     "@neondatabase/serverless": "^1.0.1",
     "@netlify/functions": "^4.0.0",
     "@netlify/neon": "^0.1.0",
-    "drizzle-orm": "^0.29.3",
-    "react-scroll": "1.8.9"
+    "drizzle-orm": "^0.44.2",
+    "pg": "^8.16.0",
+    "pg-connection-string": "^2.9.0",
+    "react-scroll": "1.8.9",
+    "windsurf-project": "file:"
   },
   "devDependencies": {
     "@types/node": "^20.10.5",
