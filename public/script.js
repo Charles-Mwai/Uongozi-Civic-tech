@@ -125,9 +125,9 @@ function showQuestion() {
 
     questionContainer.innerHTML = `
         <div class="question-header">${q.question}</div>
-        <div class="options-container">
+        <div class="options-container flex flex-wrap justify-center gap-4 mt-4">
             ${q.options.map((option, index) => `
-                <label class="option">
+                <label class="option inline-flex items-center space-x-2 px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600 transition cursor-pointer">
                     <input type="radio" name="answer" value="${index}">
                     <span>${option}</span>
                 </label>
@@ -142,7 +142,7 @@ function showQuestion() {
             if (submitBtn) submitBtn.disabled = false;
         });
     });
-    
+
     const submitBtn = document.getElementById('submitAnswerBtn');
     const nextBtn = document.getElementById('nextQuestionBtn');
     if (submitBtn && nextBtn) {
