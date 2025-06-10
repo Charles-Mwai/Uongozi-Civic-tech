@@ -21,8 +21,8 @@
   body {
     font-family: var(--font-family);
     line-height: 1.6;
-    background-color: var(--background-color);
-    color: var(--text-color);
+    background-color: #111827;
+    color: #e5e7eb;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -31,7 +31,7 @@
   }
   
   .container {
-    background: var(--surface-color);
+    background: #1f2937;
     border-radius: 12px;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1), 0 5px 10px rgba(0, 0, 0, 0.04);
     width: 100%;
@@ -42,7 +42,7 @@
   }
   
   header {
-    background: var(--surface-color);
+    background: #1f2937;
     border-bottom: 1px solid var(--border-color);
     padding: 24px;
     text-align: center;
@@ -138,18 +138,18 @@
   .options-container .option {
     display: flex;
     align-items: center;
-    background: #F9FAFB;
-    border: 1px solid var(--border-color);
+    background: #1f2937;
+    border: 1px solid #374151;
     border-radius: 8px;
     padding: 16px;
     margin-bottom: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
+    color: #e5e7eb;
   }
   
   .options-container .option:hover {
-    border-color: var(--primary-color);
-    background-color: #EFF6FF;
+    background-color: #374151;
   }
   
   .options-container .option input[type="radio"] {
@@ -177,14 +177,14 @@
   }
   
   .feedback.correct {
-    color: #065F46;
-    background-color: #D1FAE5;
+    background-color: #064e3b;
+    color: #d1fae5;
     border: 1px solid var(--correct-color);
   }
   
   .feedback.incorrect {
-    color: #991B1B;
-    background-color: #FEE2E2;
+    background-color: #7f1d1d;
+    color: #fee2e2;
     border: 1px solid var(--incorrect-color);
   }
   
@@ -257,18 +257,14 @@
   }
   
   .percentage-text {
-    fill: var(--text-color);
+    fill: #f9fafb;
     font-family: var(--font-family);
     font-size: 0.5em;
     font-weight: 700;
     text-anchor: middle;
   }
   
-  @media (prefers-color-scheme: dark) {
-    body {
-      background-color: #111827;
-      color: #e5e7eb;
-    }
+  
   
     .container, header {
       background-color: #1f2937;
@@ -297,5 +293,5 @@
     .percentage-text {
       fill: #f9fafb;
     }
-  }
+  
   
