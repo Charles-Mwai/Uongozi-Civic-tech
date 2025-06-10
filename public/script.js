@@ -76,16 +76,27 @@ const elements = {};
 
 function showStep(stepId) {
     console.log(`Showing step: ${stepId}`);
+
     document.querySelectorAll('.step').forEach(step => step.classList.remove('active'));
     const step = document.getElementById(stepId);
+
     if (step) {
         step.classList.add('active');
         updateProgressIndicator(stepId);
+
+        // Hide or show header based on step attribute
+        const header = document.getElementById('main-header');
+        if (header) {
+            const shouldHide = step.dataset.hideHeader === 'true';
+            header.style.display = shouldHide ? 'none' : '';
+        }
     } else {
         console.error(`Step element with ID '${stepId}' not found.`);
     }
+
     window.scrollTo(0, 0);
 }
+
 
 function startQuiz() {
     console.log("Starting quiz...");
