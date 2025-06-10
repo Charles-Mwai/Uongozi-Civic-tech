@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
-<head><link rel="stylesheet" href="styles.css">
+<head>link rel="stylesheet" href="styles.css">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Uongozi Civic Ed Quiz</title>
@@ -34,15 +34,15 @@
       </div>
 
       <!-- Step 2: Exam Questions -->
-      <div id="exam" class="step hidden">
+      <div id="exam" class="step hidden px-6 sm:px-12 md:px-24 lg:px-32 py-12 space-y-6">
         <div class="mb-4">
           <div id="progress-text" class="mb-1 text-sm text-gray-700 dark:text-gray-300"></div>
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
             <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
           </div>
         </div>
-        <div id="question-container" class="mb-6"></div>
-        <div class="space-x-2">
+        <div id="question-container" class="mb-6 text-lg leading-relaxed min-h-[400px] text-balance bg-gray-800 p-6 rounded-lg shadow-lg"></div>
+        <div class="flex flex-wrap gap-4 justify-center">
           <button id="submitAnswerBtn" class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" disabled>Submit Answer</button>
           <button id="nextQuestionBtn" class="bg-green-600 text-white px-4 py-2 rounded hidden">Next Question</button>
         </div>
