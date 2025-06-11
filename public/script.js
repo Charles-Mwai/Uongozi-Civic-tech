@@ -1,16 +1,5 @@
 const questions = [
     {
-      question: "What must a police officer do when arresting someone?",
-      options: [
-        "Arrest quietly to avoid panic",
-        "Only speak after reaching the station",
-        "Identify themselves and state the reason for the arrest",
-        "Use handcuffs immediately"
-      ],
-      correctAnswer: 2,
-      explanation: "A police officer must identify themselves and clearly state the reason for the arrest."
-    },
-    {
       question: "What is the first thing police must tell you when you're arrested?",
       options: [
         "That you are guilty",
@@ -44,17 +33,6 @@ const questions = [
       explanation: "Your rights must be communicated in a language you understand."
     },
     {
-      question: "If police tell you your rights in a language you do NOT understand, is that okay?",
-      options: [
-        "Yes, as long as they read them",
-        "Yes, if someone else explains later",
-        "No, they must speak in a language you understand",
-        "No, but only if you ask"
-      ],
-      correctAnswer: 2,
-      explanation: "The law requires that you understand the language used when informing you of your rights."
-    },
-    {
       question: "If not released, how soon should you be taken to court?",
       options: [
         "In 12 hours",
@@ -64,17 +42,6 @@ const questions = [
       ],
       correctAnswer: 1,
       explanation: "You must be taken to court within 48 hours if not released."
-    },
-    {
-      question: "What if you're not taken to court in 48 hours?",
-      options: [
-        "You will be found guilty",
-        "The arrest is still okay",
-        "You must be released unless charged",
-        "You stay in jail longer"
-      ],
-      correctAnswer: 2,
-      explanation: "The law requires release unless formal charges are made within 48 hours."
     },
     {
       question: "If you are kept in police cells for more than 48 hours without going to court, what does the law say?",
@@ -97,28 +64,6 @@ const questions = [
       ],
       correctAnswer: 1,
       explanation: "Bail can be denied only with valid legal justification."
-    },
-    {
-      question: "What does Article 49(1)(f) say?",
-      options: [
-        "You must be sentenced quickly",
-        "You should get an apology",
-        "You can be released on bail or bond",
-        "You can sue the police"
-      ],
-      correctAnswer: 2,
-      explanation: "Article 49(1)(f) guarantees the right to bail or bond unless compelling reasons exist."
-    },
-    {
-      question: "Who has the right to stay silent after arrest?",
-      options: [
-        "Only people in court cases",
-        "Only those found guilty",
-        "Anyone who is arrested",
-        "Only people from outside Kenya"
-      ],
-      correctAnswer: 2,
-      explanation: "Everyone who is arrested has the right to remain silent."
     },
     {
       question: "Can you be forced to say something in court?",
@@ -174,17 +119,6 @@ const questions = [
       ],
       correctAnswer: 1,
       explanation: "Many police cells fail to meet the requirement of being clean and safe for detainees."
-    },
-    {
-      question: "What should happen if police beat or mistreat someone in custody?",
-      options: [
-        "Nothing, it's part of arrest",
-        "They should be reported and held accountable",
-        "They should apologize",
-        "The person should not complain"
-      ],
-      correctAnswer: 1,
-      explanation: "Police abuse must be reported, and officers should face accountability."
     },
     {
       question: "What should you do if police hurt you or abuse you in the cell?",
