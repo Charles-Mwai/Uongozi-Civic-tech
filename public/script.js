@@ -418,7 +418,7 @@ function updateProgressIndicator(stepId) {
 
 function setupSharing() {
     const shareUrl = window.location.href;
-    const shareTitle = `Do you know the rights of an arrested persons in Kenya? I scored ${appState.score}/${questions.length} on the test! Think you can beat me? #UongoZi`;
+    const shareTitle = `Do you know the rights of an arrested person in Kenya? I scored ${appState.score}/${questions.length} on the test! Think you can beat me? #UongoZi`;
 
     document.getElementById('shareFacebook').onclick = () => window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`);
     document.getElementById('shareTwitter').onclick = () => window.open(`https://twitter.com/intent/tweet?url=${encodeURIComponent(shareUrl)}&text=${encodeURIComponent(shareTitle)}`);
