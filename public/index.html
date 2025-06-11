@@ -1,13 +1,13 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Uongozi Civic Ed Quiz</title>
   <link rel="stylesheet" href="styles.css">
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Uongozi Civic Ed Quiz</title>
+  <meta name="theme-color" content="#1d4ed8">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -24,36 +24,39 @@
   </script>
 </head>
 <body class="bg-gray-50 dark:bg-gray-900 font-sans text-gray-800 dark:text-gray-100">
-  <div class="max-w-screen-sm mx-auto px-2 sm:px-4 md:px-6 py-3">
+  <div class="max-w-screen-sm mx-auto px-3 sm:px-4 md:px-6 py-3 w-full">
     <header class="mb-6 text-center" id="main-header">
-  <h1 class="text-3xl font-bold text-blue-800 dark:text-blue-300">Uongozi Civic Ed Quiz</h1>
-</header>
+      <h1 class="text-3xl font-bold text-blue-800 dark:text-blue-300">Uongozi Civic Ed Quiz</h1>
+    </header>
 
     <main id="quiz-container" class="space-y-8">
       <!-- Step 1: Landing Page -->
-      <div id="landing" class="step active text-center px-6 sm:px-12 md:px-20 lg:px-32 py-12">
-        <h2 class="text-3xl font-bold mb-4 leading-snug">Do you know your rights as an arrested person?</h2>
-        <p class="mb-6 text-lg text-gray-300">Uongozi is a civic education program designed to empower citizens with knowledge about their rights and principles of good governance. Click the button below to begin.</p>
-        <button id="startQuiz" class="bg-blue-600 text-white px-8 py-3 text-lg rounded hover:bg-blue-700 transition-all">Start Exam</button>
+      <div id="landing" class="step active text-center px-4 sm:px-8 md:px-12 py-8 sm:py-12">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 leading-tight">Do you know your rights as an arrested person?</h2>
+        <p class="mb-6 text-base sm:text-lg text-gray-300 max-w-2xl mx-auto">
+          Uongozi is a civic education program that teaches citizens about their rights and good governance.
+          Click the button below to begin.
+        </p>
+        <button id="startQuiz" class="bg-blue-600 text-white px-6 sm:px-8 py-3 text-base sm:text-lg rounded-lg hover:bg-blue-700 transition-all w-full max-w-xs mx-auto">Start Exam</button>
       </div>
 
       <!-- Step 2: Exam Questions -->
-      <div id="exam" class="step hidden px-4 sm:px-8 md:px-16 lg:px-24 py-8 space-y-4" data-hide-header="true">
+      <div id="exam" class="step hidden px-3 sm:px-6 py-6 space-y-4 w-full" data-hide-header="true">
         <div class="mb-4 mt-4">
           <div id="progress-text" class="mb-1 text-sm text-gray-700 dark:text-gray-300"></div>
           <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5">
             <div id="progress-bar" class="bg-blue-600 h-2.5 rounded-full" style="width: 0%;"></div>
           </div>
         </div>
-        <div id="question-container" class="text-lg leading-relaxed min-h-[300px] text-balance bg-gray-800 p-4 rounded-lg shadow-lg transition-opacity duration-500 ease-in-out flex flex-col items-center justify-center gap-4"></div>
-        <div class="flex flex-wrap gap-4 justify-center pb-8">
-          <button id="submitAnswerBtn" class="bg-blue-600 text-white px-4 py-2 rounded disabled:opacity-50" disabled>Submit Answer</button>
-          <button id="nextQuestionBtn" class="bg-green-600 text-white px-4 py-2 rounded hidden">Next Question</button>
+        <div id="question-container" class="text-base sm:text-lg leading-relaxed min-h-[250px] sm:min-h-[300px] text-balance bg-gray-800 p-4 sm:p-6 rounded-lg shadow-lg transition-opacity duration-500 ease-in-out flex flex-col items-center justify-center gap-4 w-full"></div>
+        <div class="flex flex-wrap gap-3 sm:gap-4 justify-center pb-6 w-full">
+          <button id="submitAnswerBtn" class="bg-blue-600 text-white px-4 py-2.5 rounded-lg disabled:opacity-50 flex-1 sm:flex-none min-w-[140px]" disabled>Submit Answer</button>
+          <button id="nextQuestionBtn" class="bg-green-600 text-white px-4 py-2.5 rounded-lg hidden flex-1 sm:flex-none min-w-[140px]">Next Question</button>
         </div>
       </div>
 
       <!-- Step 3: User Info Form -->
-      <div id="user-info" class="step hidden px-6 sm:px-8 md:px-12 py-8 space-y-6">
+      <div id="user-info" class="step hidden px-4 sm:px-6 py-6 space-y-5 w-full">
         <h2 class="text-2xl font-semibold mb-2">One last step!</h2>
         <p class="mb-4">You're seconds away from seeing your results.Mind telling us a bit about yourself first?</p>
         <form id="demographicsForm" class="space-y-4">
@@ -76,18 +79,18 @@
           </div>
           <div>
             <label class="block text-sm font-medium">Gender</label>
-            <div class="flex flex-wrap gap-4 mt-2">
+            <div class="flex flex-wrap gap-3 sm:gap-4 mt-2">
               <label><input type="radio" name="gender" value="male" required> Male</label>
               <label><input type="radio" name="gender" value="female"> Female</label>
               <label><input type="radio" name="gender" value="other"> Other</label>
             </div>
           </div>
-          <button type="submit" class="w-full sm:w-auto bg-blue-600 text-white px-6 py-3 text-base rounded hover:bg-blue-700">Show My Results</button>
+          <button type="submit" class="w-full bg-blue-600 text-white px-6 py-3 text-base rounded-lg hover:bg-blue-700 mt-2">Show My Results</button>
         </form>
       </div>
 
       <!-- Step 4: Results -->
-      <div id="results" class="step hidden text-center px-6 sm:px-12 md:px-24 lg:px-32 py-12 space-y-6">
+      <div id="results" class="step hidden text-center px-4 sm:px-8 py-8 space-y-6 w-full">
         <h2 class="text-4xl font-bold mb-6 text-blue-400">Your Results</h2>
         <div class="flex justify-center mb-6">
   <div class="results-graphic">
@@ -103,16 +106,16 @@
 
         <div id="share-section" class="mb-4">
           <p class="mb-2">Share your results!</p>
-          <div class="flex flex-wrap justify-center gap-2">
-            <button id="shareFacebook" class="bg-blue-700 text-white px-4 py-2 rounded">Facebook</button>
-            <button id="shareTwitter" class="bg-blue-500 text-white px-4 py-2 rounded">Twitter</button>
-            <button id="shareWhatsApp" class="bg-green-500 text-white px-4 py-2 rounded">WhatsApp</button>
-            <button id="copyLink" class="bg-gray-600 text-white px-4 py-2 rounded">Copy Link</button>
+          <div class="grid grid-cols-2 gap-3 max-w-xs mx-auto">
+            <button id="shareFacebook" class="bg-blue-700 text-white px-3 py-2.5 rounded-lg text-sm">Facebook</button>
+            <button id="shareTwitter" class="bg-blue-500 text-white px-3 py-2.5 rounded-lg text-sm">Twitter</button>
+            <button id="shareWhatsApp" class="bg-green-500 text-white px-3 py-2.5 rounded-lg text-sm">WhatsApp</button>
+            <button id="copyLink" class="bg-gray-600 text-white px-3 py-2.5 rounded-lg text-sm">Copy Link</button>
           </div>
           <p id="share-message" class="text-sm text-green-600 mt-2"></p>
         </div>
 
-        <button id="restart-btn" class="bg-blue-600 text-white px-8 py-3 text-lg rounded hover:bg-blue-700 mt-6">Take Again</button>
+        <button id="restart-btn" class="bg-blue-600 text-white px-8 py-3 text-base sm:text-lg rounded-lg hover:bg-blue-700 mt-6 w-full max-w-xs mx-auto">Take Again</button>
       </div>
     </main>
   </div>

@@ -197,20 +197,40 @@ function showQuestion() {
     }
 
     questionContainer.innerHTML = `
-        <div class="question-header">${q.question}</div>
-        <div class="options-container flex flex-wrap justify-center gap-4 mt-4">
+        <div class="question-header text-xl font-medium mb-6 text-center">${q.question}</div>
+        <div class="options-container flex flex-nowrap overflow-x-auto pb-4 gap-4 px-2 -mx-2">
             ${q.options.map((option, index) => `
-                <label class="option inline-flex items-center space-x-2 px-4 py-2 bg-gray-700 rounded-md hover:bg-gray-600 transition cursor-pointer">
-                    <input type="radio" name="answer" value="${index}">
-                    <span>${option}</span>
-                </label>
+                <div class="flex-shrink-0 w-72">
+                    <label class="option h-full flex flex-col p-4 bg-gray-700 rounded-lg hover:bg-gray-600 transition cursor-pointer border-2 border-transparent hover:border-blue-500">
+                        <input type="radio" name="answer" value="${index}" class="hidden">
+                        <span class="flex-1">${option}</span>
+                        <div class="mt-3 text-blue-400 opacity-0">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                            </svg>
+                        </div>
+                    </label>
+                </div>
             `).join('')}
         </div>
-        <div id="feedback" class="feedback"></div>
+        <div id="feedback" class="feedback mt-6 text-center"></div>
     `;
 
     document.querySelectorAll('input[name="answer"]').forEach(radio => {
-        radio.addEventListener('change', () => {
+        radio.addEventListener('change', (e) => {
+            // Remove selected class from all options
+            document.querySelectorAll('.option').forEach(opt => {
+                opt.classList.remove('border-blue-500', 'bg-gray-600');
+                opt.querySelector('svg').classList.add('opacity-0');
+            });
+            
+            // Add selected class to clicked option
+            const label = e.target.closest('.option');
+            if (label) {
+                label.classList.add('border-blue-500', 'bg-gray-600');
+                label.querySelector('svg').classList.remove('opacity-0');
+            }
+            
             const submitBtn = document.getElementById('submitAnswerBtn');
             if (submitBtn) submitBtn.disabled = false;
         });
