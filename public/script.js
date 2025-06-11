@@ -1,65 +1,204 @@
 const questions = [
     {
-        question: "Which body resolves disputes related to elections in Kenya?",
-        options: ["National Assembly", "Supreme Court", "IEBC", "Political Parties Tribunal"],
-        correctAnswer: 3,
-        explanation: "The Political Parties Tribunal handles disputes related to political parties and their activities."
+      question: "What must a police officer do when arresting someone?",
+      options: [
+        "Arrest quietly to avoid panic",
+        "Only speak after reaching the station",
+        "Identify themselves and state the reason for the arrest",
+        "Use handcuffs immediately"
+      ],
+      correctAnswer: 2,
+      explanation: "A police officer must identify themselves and clearly state the reason for the arrest."
     },
     {
-        question: "What is the minimum age to run for President in Kenya?",
-        options: ["18 years", "25 years", "35 years", "40 years"],
-        correctAnswer: 2,
-        explanation: "The minimum age to run for President in Kenya is 35 years as per the Constitution."
+      question: "What is the first thing police must tell you when you're arrested?",
+      options: [
+        "That you are guilty",
+        "That you must stay silent until bail",
+        "Why you are being arrested",
+        "That you can talk to a lawyer only after court"
+      ],
+      correctAnswer: 2,
+      explanation: "You must be told the reason for your arrest immediately."
     },
     {
-        question: "What is the symbol of national unity in Kenya?",
-        options: ["The Parliament", "The Governor", "The President", "The Constitution"],
-        correctAnswer: 2,
-        explanation: "The President is considered the symbol of national unity in Kenya."
+      question: "When should you be told about your right to stay silent?",
+      options: [
+        "When you get to the police station",
+        "Before going to court",
+        "Right when you are arrested",
+        "After you are charged"
+      ],
+      correctAnswer: 2,
+      explanation: "You must be informed of your right to remain silent at the time of arrest."
     },
     {
-        question: "Who represents a ward in the County Assembly?",
-        options: ["Senator", "Member of Parliament", "Member of County Assembly (MCA)", "Cabinet Secretary"],
-        correctAnswer: 2,
-        explanation: "A Member of County Assembly (MCA) represents a ward in the County Assembly."
+      question: "In what language must your rights be explained?",
+      options: [
+        "English only",
+        "Kiswahili only",
+        "A language you understand",
+        "Written on a sign"
+      ],
+      correctAnswer: 2,
+      explanation: "Your rights must be communicated in a language you understand."
     },
     {
-        question: "What is the role of the Senate in Kenya?",
-        options: ["Managing the police", "Representing counties and protecting their interests", "Issuing national ID cards", "Running county schools"],
-        correctAnswer: 1,
-        explanation: "The Senate represents the counties and protects their interests in legislation."
+      question: "If police tell you your rights in a language you do NOT understand, is that okay?",
+      options: [
+        "Yes, as long as they read them",
+        "Yes, if someone else explains later",
+        "No, they must speak in a language you understand",
+        "No, but only if you ask"
+      ],
+      correctAnswer: 2,
+      explanation: "The law requires that you understand the language used when informing you of your rights."
     },
     {
-        question: "Which level of government is responsible for health services?",
-        options: ["National Government only", "County Government only", "Both National and County Governments", "The Judiciary"],
-        correctAnswer: 2,
-        explanation: "Health services are a shared responsibility between National and County Governments."
+      question: "If not released, how soon should you be taken to court?",
+      options: [
+        "In 12 hours",
+        "In 48 hours",
+        "In 72 hours",
+        "In one week"
+      ],
+      correctAnswer: 1,
+      explanation: "You must be taken to court within 48 hours if not released."
     },
     {
-        question: "What is the importance of voting?",
-        options: ["It makes one popular", "It is a constitutional right and a civic duty", "It is only for politicians", "It helps avoid taxes"],
-        correctAnswer: 1,
-        explanation: "Voting is both a constitutional right and a civic duty for citizens."
+      question: "What if you're not taken to court in 48 hours?",
+      options: [
+        "You will be found guilty",
+        "The arrest is still okay",
+        "You must be released unless charged",
+        "You stay in jail longer"
+      ],
+      correctAnswer: 2,
+      explanation: "The law requires release unless formal charges are made within 48 hours."
     },
     {
-        question: "What does the Judiciary do?",
-        options: ["Make laws", "Enforce laws", "Interpret and apply the law", "Run elections"],
-        correctAnswer: 2,
-        explanation: "The Judiciary interprets and applies the law in legal disputes."
+      question: "If you are kept in police cells for more than 48 hours without going to court, what does the law say?",
+      options: [
+        "Police can hold you as long as they want",
+        "You must be released unless taken to court",
+        "You should pay a fine",
+        "You lose your rights"
+      ],
+      correctAnswer: 1,
+      explanation: "Holding someone without charging them in court within 48 hours is unlawful."
     },
     {
-        question: "Who appoints Cabinet Secretaries in Kenya?",
-        options: ["The Senate", "The President", "The Chief Justice", "The National Assembly"],
-        correctAnswer: 1,
-        explanation: "The President appoints Cabinet Secretaries with approval from the National Assembly."
+      question: "Can you be denied bail or bond?",
+      options: [
+        "Yes, if a senior officer arrests you",
+        "Yes, if there is a good reason",
+        "Yes, if you're questioned",
+        "Yes, if you say you're guilty"
+      ],
+      correctAnswer: 1,
+      explanation: "Bail can be denied only with valid legal justification."
     },
     {
-        question: "Who oversees revenue allocation to counties?",
-        options: ["Auditor-General", "Senate", "IEBC", "Controller of Budget"],
-        correctAnswer: 1,
-        explanation: "The Senate oversees the allocation of national revenue among counties."
+      question: "What does Article 49(1)(f) say?",
+      options: [
+        "You must be sentenced quickly",
+        "You should get an apology",
+        "You can be released on bail or bond",
+        "You can sue the police"
+      ],
+      correctAnswer: 2,
+      explanation: "Article 49(1)(f) guarantees the right to bail or bond unless compelling reasons exist."
+    },
+    {
+      question: "Who has the right to stay silent after arrest?",
+      options: [
+        "Only people in court cases",
+        "Only those found guilty",
+        "Anyone who is arrested",
+        "Only people from outside Kenya"
+      ],
+      correctAnswer: 2,
+      explanation: "Everyone who is arrested has the right to remain silent."
+    },
+    {
+      question: "Can you be forced to say something in court?",
+      options: [
+        "Yes, if police ask",
+        "Yes, after 24 hours",
+        "No, only if a judge is there",
+        "No, unless you choose to speak"
+      ],
+      correctAnswer: 3,
+      explanation: "You can only speak in court if you choose to; you cannot be forced to speak."
+    },
+    {
+      question: "If police delay letting you speak to your lawyer, is that okay?",
+      options: [
+        "Yes, if they are busy",
+        "No, it is your right to speak to a lawyer immediately",
+        "Only after you’ve been charged",
+        "Only if you are guilty"
+      ],
+      correctAnswer: 1,
+      explanation: "You have a right to speak to a lawyer immediately upon arrest."
+    },
+    {
+      question: "Which of these is NOT your right when arrested?",
+      options: [
+        "To be kept in a secret place",
+        "To talk to your lawyer",
+        "To be treated well",
+        "To go to court within 48 hours"
+      ],
+      correctAnswer: 0,
+      explanation: "Being held in a secret location is not a legal right and violates due process."
+    },
+    {
+      question: "If you are arrested and there is no written record or reason given, what is the risk?",
+      options: [
+        "You will be fined later",
+        "You may be released faster",
+        "You can be held without anyone knowing",
+        "You can still go to court"
+      ],
+      correctAnswer: 2,
+      explanation: "Without records, your arrest can become unlawful and you risk being held without accountability."
+    },
+    {
+      question: "Which of the following is a right of arrested persons that is often NOT respected in police cells?",
+      options: [
+        "Right to free Wi-Fi",
+        "Right to a clean and safe place to stay",
+        "Right to be fed by family",
+        "Right to private toilets"
+      ],
+      correctAnswer: 1,
+      explanation: "Many police cells fail to meet the requirement of being clean and safe for detainees."
+    },
+    {
+      question: "What should happen if police beat or mistreat someone in custody?",
+      options: [
+        "Nothing, it's part of arrest",
+        "They should be reported and held accountable",
+        "They should apologize",
+        "The person should not complain"
+      ],
+      correctAnswer: 1,
+      explanation: "Police abuse must be reported, and officers should face accountability."
+    },
+    {
+      question: "What should you do if police hurt you or abuse you in the cell?",
+      options: [
+        "Stay silent",
+        "Wait until court to talk",
+        "Report to the Independent Policing Oversight Authority (IPOA)",
+        "Run away"
+      ],
+      correctAnswer: 2,
+      explanation: "You should report abuse to IPOA, the official body overseeing police conduct."
     }
-];
+  ];
+  
 
 // Global state
 const appState = {
