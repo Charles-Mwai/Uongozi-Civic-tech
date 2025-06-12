@@ -77,7 +77,7 @@ const questions = [
       explanation: "Arrested persons have a right to contact their lawyer and visitors."
     },
     {
-      question: "When should someone not be kept in custody after being arrested?",
+      question: "When should someone not be kept in custody after being arrested?",
       options: [
         "If the offence carries a possible life sentence",
         "If the offence is punishable only by a fine or up to six months in prison",
