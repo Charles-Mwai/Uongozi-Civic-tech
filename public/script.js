@@ -1,50 +1,39 @@
 const questions = [
     {
-      question: "What is the first thing police must tell you when you're arrested?",
+      question: "What must a police officer do when arresting someone?",
       options: [
-        "That you are guilty",
-        "That you must stay silent until bail",
-        "Why you are being arrested",
-        "That you can talk to a lawyer only after court"
+        "Arrest quietly to avoid panic",
+        "Only speak after reaching the station",
+        "Identify themselves and state the reason for the arrest",
+        "Use handcuffs immediately"
       ],
       correctAnswer: 2,
-      explanation: "You must be told the reason for your arrest immediately."
+      explanation: "A police officer must identify themselves and clearly state the reason for the arrest."
     },
     {
-      question: "When should you be told about your right to stay silent?",
+      question: "Which of the following is NOT a right of an arrested person under the Kenyan Constitution?",
       options: [
-        "When you get to the police station",
-        "Before going to court",
-        "Right when you are arrested",
-        "After you are charged"
+        "Right to information & communication",
+        "Right to remain silent and legal representation",
+        "Right to be held separately from convicted persons",
+        "Right to wifi and entertainment"
       ],
-      correctAnswer: 2,
-      explanation: "You must be informed of your right to remain silent at the time of arrest."
-    },
-    {
-      question: "In what language must your rights be explained?",
-      options: [
-        "English only",
-        "Kiswahili only",
-        "A language you understand",
-        "Written on a sign"
-      ],
-      correctAnswer: 2,
-      explanation: "Your rights must be communicated in a language you understand."
+      correctAnswer: 3,
+      explanation: "The Kenyan Constitution does not guarantee entertainment or wifi as a right for arrested persons."
     },
     {
       question: "If not released, how soon should you be taken to court?",
       options: [
-        "In 12 hours",
-        "In 48 hours",
-        "In 72 hours",
-        "In one week"
+        "When the OCS decides",
+        "Within 24 hours",
+        "When a police vehicle is available",
+        "As soon as you pay a bribe"
       ],
       correctAnswer: 1,
-      explanation: "You must be taken to court within 48 hours if not released."
+      explanation: "You must be taken to court within 24 hours if not released."
     },
     {
-      question: "If you are kept in police cells for more than 48 hours without going to court, what does the law say?",
+      question: "If you are kept in police cells for more than 24 hours without going to court, what does the law say?",
       options: [
         "Police can hold you as long as they want",
         "You must be released unless taken to court",
@@ -52,18 +41,18 @@ const questions = [
         "You lose your rights"
       ],
       correctAnswer: 1,
-      explanation: "Holding someone without charging them in court within 48 hours is unlawful."
+      explanation: "You must be released unless taken to court within the time specified by law."
     },
     {
-      question: "Can you be denied bail or bond?",
+      question: "Which of the following is NOT a valid reason for denying bail or bond to an arrested person in Kenya?",
       options: [
-        "Yes, if a senior officer arrests you",
-        "Yes, if there is a good reason",
-        "Yes, if you're questioned",
-        "Yes, if you say you're guilty"
+        "The accused is likely to flee or interfere with witnesses",
+        "The offence is serious and may endanger public safety",
+        "The accused has no lawyer and cannot afford one",
+        "The accused’s life may be at risk if released"
       ],
-      correctAnswer: 1,
-      explanation: "Bail can be denied only with valid legal justification."
+      correctAnswer: 2,
+      explanation: "Not having a lawyer is not a legal reason to deny bail or bond."
     },
     {
       question: "Can you be forced to say something in court?",
@@ -74,62 +63,51 @@ const questions = [
         "No, unless you choose to speak"
       ],
       correctAnswer: 3,
-      explanation: "You can only speak in court if you choose to; you cannot be forced to speak."
+      explanation: "You cannot be forced to speak in court unless you choose to."
     },
     {
-      question: "If police delay letting you speak to your lawyer, is that okay?",
+      question: "Can the police stop you from talking to your lawyer or visitors after arrest?",
       options: [
         "Yes, if they are busy",
-        "No, it is your right to speak to a lawyer immediately",
+        "No, it is your right to speak to a lawyer and your visitors.",
         "Only after you’ve been charged",
-        "Only if you are guilty"
+        "Yes, if you are considered guilty"
       ],
       correctAnswer: 1,
-      explanation: "You have a right to speak to a lawyer immediately upon arrest."
+      explanation: "Arrested persons have a right to contact their lawyer and visitors."
     },
     {
-      question: "Which of these is NOT your right when arrested?",
+      question: "In which case should a person NOT be remanded in custody after arrest?",
       options: [
-        "To be kept in a secret place",
-        "To talk to your lawyer",
-        "To be treated well",
-        "To go to court within 48 hours"
-      ],
-      correctAnswer: 0,
-      explanation: "Being held in a secret location is not a legal right and violates due process."
-    },
-    {
-      question: "If you are arrested and there is no written record or reason given, what is the risk?",
-      options: [
-        "You will be fined later",
-        "You may be released faster",
-        "You can be held without anyone knowing",
-        "You can still go to court"
-      ],
-      correctAnswer: 2,
-      explanation: "Without records, your arrest can become unlawful and you risk being held without accountability."
-    },
-    {
-      question: "Which of the following is a right of arrested persons that is often NOT respected in police cells?",
-      options: [
-        "Right to free Wi-Fi",
-        "Right to a clean and safe place to stay",
-        "Right to be fed by family",
-        "Right to private toilets"
+        "If the offence carries a possible life sentence",
+        "If the offence is punishable only by a fine or up to six months in prison",
+        "If the person has no lawyer",
+        "If the offence is under investigation"
       ],
       correctAnswer: 1,
-      explanation: "Many police cells fail to meet the requirement of being clean and safe for detainees."
+      explanation: "If the offence is minor and non-violent, remand may not be necessary."
     },
     {
-      question: "What should you do if police hurt you or abuse you in the cell?",
+      question: "What procedure should be followed if an arrested person is taken to a police station?",
       options: [
-        "Stay silent",
-        "Wait until court to talk",
-        "Report to the Independent Policing Oversight Authority (IPOA)",
-        "Run away"
+        "They should asked for bribe immediately",
+        "They should be booked immediately",
+        "They should be taken to court immediately",
+        "They should write a statement immediately"
       ],
-      correctAnswer: 2,
-      explanation: "You should report abuse to IPOA, the official body overseeing police conduct."
+      correctAnswer: 1,
+      explanation: "Upon arrival at the station, an arrested person must be formally recorded in the register."
+    },
+    {
+      question: "What should happen if police beat or mistreat someone in custody?",
+      options: [
+        "Nothing, it's part of arrest",
+        "They should be reported and held accountable",
+        "They should apologize",
+        "The person should not complain"
+      ],
+      correctAnswer: 1,
+      explanation: "Police abuse should be reported so that the officers involved are held accountable."
     }
   ];
   
