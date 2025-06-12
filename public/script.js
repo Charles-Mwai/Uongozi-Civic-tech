@@ -417,7 +417,7 @@ document.addEventListener('DOMContentLoaded', () => {
     console.log("DOM fully loaded and parsed");
 
     // Cache elements
-    elements.startBtn = document.getElementById('startQuiz');
+    elements.startBtn = document.getElementById('START');
     elements.demographicsForm = document.getElementById('demographicsForm');
     elements.restartBtn = document.getElementById('restart-btn');
     
