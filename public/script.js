@@ -88,7 +88,7 @@ const questions = [
       explanation: "If the offence is minor and non-violent, remand may not be necessary."
     },
     {
-      question: "What procedure should be followed if an arrested person is taken to a police station?",
+      question: "What is the first thing that should happen when an arrested person is taken to a police  station?",
       options: [
         "They should asked for bribe immediately",
         "They should be booked immediately",
@@ -99,10 +99,10 @@ const questions = [
       explanation: "Upon arrival at the station, an arrested person must be formally recorded in the register."
     },
     {
-      question: "What should happen if police beat or mistreat someone in custody?",
+      question: "What should happen if the police beat or mistreat someone in custody?",
       options: [
         "Nothing, it's part of arrest",
-        "They should be reported and held accountable",
+        "They should be reported to IPOA and held personally accountable",
         "They should apologize",
         "The person should not complain"
       ],
